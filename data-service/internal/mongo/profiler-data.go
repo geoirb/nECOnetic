@@ -5,7 +5,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/nECOnetic/storage/internal/service"
+	"github.com/nECOnetic/data-service/internal/service"
 )
 
 // StoreEcoPrediction ...

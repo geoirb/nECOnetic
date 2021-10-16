@@ -5,7 +5,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/nECOnetic/storage/internal/service"
+	"github.com/nECOnetic/data-service/internal/service"
 )
 
 // TODO:

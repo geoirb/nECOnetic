@@ -10,10 +10,9 @@ import (
 
 // Storage mongo.
 type storage struct {
-	stationCollection       *mongo.Collection
-	ecoDataCollection       *mongo.Collection
-	profilerDataCollection  *mongo.Collection
-	ecoPredictionCollection *mongo.Collection
+	stationCollection      *mongo.Collection
+	ecoDataCollection      *mongo.Collection
+	profilerDataCollection *mongo.Collection
 }
 
 // NewStorage ...
@@ -47,12 +46,6 @@ func (f *Fabric) NewStorage(
 	// TODO:
 	// 1. station id must existing in station collection
 	// 2. unique station id and datatime
-
-	s.ecoPredictionCollection = db.Collection(f.EcoPredictionCollectionName)
-	// TODO:
-	// 1. station id must existing in station collection
-	// 2. unique station id and datatime
-	// 3. pair station id datatime mast not existing in ecodata
 
 	return s, nil
 }

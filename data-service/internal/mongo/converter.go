@@ -1,8 +1,9 @@
 package mongo
 
 import (
-	"github.com/nECOnetic/storage/internal/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"github.com/nECOnetic/data-service/internal/service"
 )
 
 func stationToMongo(src service.Station) station {
@@ -19,23 +20,9 @@ func ecoDataToMongo(srcList []service.EcoData) []interface{} {
 
 	for _, src := range srcList {
 		el := ecoData{
-			Datatime:    src.Datatime,
-			Measurement: src.Measurement,
-		}
-		el.StationID, _ = primitive.ObjectIDFromHex(src.StationID)
-		dst = append(dst, el)
-	}
-	return dst
-}
-
-func ecoPredictionToMongo(srcList []service.EcoPrediction) []interface{} {
-	dst := make([]interface{}, 0, len(srcList))
-	for _, src := range srcList {
-		el := ecoPrediction{
-			ecoData{
-				Datatime:    src.Datatime,
-				Measurement: src.Measurement,
-			},
+			Datatime:             src.Datatime,
+			Measurement:          src.Measurement,
+			PredictedMeasurement: src.PredictedMeasurement,
 		}
 		el.StationID, _ = primitive.ObjectIDFromHex(src.StationID)
 		dst = append(dst, el)

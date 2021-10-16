@@ -1,4 +1,4 @@
-module github.com/nECOnetic/storage
+module github.com/nECOnetic/data-service
 
 go 1.17
 

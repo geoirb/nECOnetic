@@ -14,9 +14,10 @@ type station struct {
 }
 
 type ecoData struct {
-	StationID   primitive.ObjectID `bson:"station_id"`
-	Datatime    time.Time          `bson:"datatime"`
-	Measurement map[string]float64 `bson:"measurement"`
+	StationID            primitive.ObjectID `bson:"station_id"`
+	Datatime             time.Time          `bson:"datatime"`
+	Measurement          map[string]float64 `bson:"measurement"`
+	PredictedMeasurement map[string]float64 `bson:"predicted_measurement"`
 }
 
 type profilerData struct {
@@ -26,8 +27,4 @@ type profilerData struct {
 	OutsideTemperature *float64           `bson:"outside_temperature,omitempty"`
 	WindDirection      *int               `bson:"wind_direction,omitempty"`
 	WindSpeed          *int               `bson:"wind_speed"`
-}
-
-type ecoPrediction struct {
-	ecoData
 }

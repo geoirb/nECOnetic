@@ -7,8 +7,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/nECOnetic/storage/internal/mongo"
-	"github.com/nECOnetic/storage/internal/service"
+	"github.com/nECOnetic/data-service/internal/mongo"
+	"github.com/nECOnetic/data-service/internal/service"
 )
 
 var stations []service.Station = []service.Station{
@@ -66,10 +66,9 @@ var stations []service.Station = []service.Station{
 
 func TestStoreStation(t *testing.T) {
 	f := mongo.Fabric{
-		StationCollectionName:       "station",
-		EcoDataCollectionName:       "eco-data",
-		ProfilerDataCollectionName:  "profiler",
-		EcoPredictionCollectionName: "eco-prediction",
+		StationCollectionName:      "station",
+		EcoDataCollectionName:      "eco-data",
+		ProfilerDataCollectionName: "profiler",
 	}
 
 	st, err := f.NewStorage(
@@ -89,10 +88,9 @@ func TestStoreStation(t *testing.T) {
 
 func TestStoreEcoData(t *testing.T) {
 	f := mongo.Fabric{
-		StationCollectionName:       "station",
-		EcoDataCollectionName:       "eco-data",
-		ProfilerDataCollectionName:  "profiler",
-		EcoPredictionCollectionName: "eco-prediction",
+		StationCollectionName:      "station",
+		EcoDataCollectionName:      "eco-data",
+		ProfilerDataCollectionName: "profiler",
 	}
 
 	st, err := f.NewStorage(

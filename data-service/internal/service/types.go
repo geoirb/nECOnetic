@@ -22,6 +22,9 @@ type EcoData struct {
 	StationID   string
 	Datatime    time.Time
 	Measurement map[string]float64
+	// TODO
+	PredictedMeasurement map[string]float64
+
 }
 
 // ProfileData received from station.
@@ -32,11 +35,6 @@ type ProfilerData struct {
 	OutsideTemperature *float64
 	WindDirection      *int
 	WindSpeed          *int
-}
-
-// EcoPrediction received from prediction module.
-type EcoPrediction struct {
-	EcoData
 }
 
 type StationData struct {

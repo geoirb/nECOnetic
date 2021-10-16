@@ -14,7 +14,6 @@ type storage interface {
 	StoreStation(ctx context.Context, st Station) (Station, error)
 	StoreProfilerData(ctx context.Context, dataList []ProfilerData) error
 	StoreEcoData(ctx context.Context, dataList []EcoData) error
-	StoreEcoPrediction(ctx context.Context, dataList []EcoPrediction) error
 
 	LoadStation(ctx context.Context, f StationFilter) ([]Station, error)
 }
