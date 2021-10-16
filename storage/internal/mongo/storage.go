@@ -4,20 +4,22 @@ import (
 	"context"
 	"fmt"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Storage mongo.
 type storage struct {
-	faceSearchCollection *mongo.Collection
+	stationCollection       *mongo.Collection
+	ecoDataCollection       *mongo.Collection
+	profilerDataCollection  *mongo.Collection
+	ecoPredictionCollection *mongo.Collection
 }
 
 // NewStorage ...
-func NewStorage(
+func (f *Fabric) NewStorage(
 	ctx context.Context,
-	connStr, databaseName, ecoCollectionName string,
+	connStr, databaseName string,
 ) (*storage, error) {
 	opts := options.Client().ApplyURI(connStr)
 	connect, err := mongo.Connect(ctx, opts)
@@ -26,18 +28,31 @@ func NewStorage(
 	}
 	if err = connect.Ping(ctx, nil); err != nil {
 		err = fmt.Errorf("error ping mongo storage %w", err)
-	}
-
-	collection := connect.Database(databaseName).Collection(ecoCollectionName)
-	if _, err := collection.Indexes().CreateOne(ctx,
-		mongo.IndexModel{
-			Keys:    bson.M{"photo_hash": 1},
-			Options: options.Index().SetUnique(true),
-		}); err != nil {
 		return nil, err
 	}
 
-	return &storage{
-		faceSearchCollection: collection,
-	}, err
+	db := connect.Database(databaseName)
+
+	s := &storage{}
+	s.stationCollection = db.Collection(f.StationCollectionName)
+	// TODO:
+	// 1. unique lat lon station
+	// 2. unique name station
+
+	s.profilerDataCollection = db.Collection(f.ProfilerDataCollectionName)
+	// TODO:
+	// 1. unique station id and datatime
+
+	s.ecoDataCollection = db.Collection(f.EcoDataCollectionName)
+	// TODO:
+	// 1. station id must existing in station collection
+	// 2. unique station id and datatime
+
+	s.ecoPredictionCollection = db.Collection(f.EcoPredictionCollectionName)
+	// TODO:
+	// 1. station id must existing in station collection
+	// 2. unique station id and datatime
+	// 3. pair station id datatime mast not existing in ecodata
+
+	return s, nil
 }
