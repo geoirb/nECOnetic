@@ -1,11 +1,8 @@
-package service_test
+package main
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"os"
-	"testing"
 
 	"github.com/nECOnetic/data-service/internal/mongo"
 	"github.com/nECOnetic/data-service/internal/service"
@@ -28,7 +25,7 @@ var stations []service.Station = []service.Station{
 		Lon:  37.71249,
 	},
 	{
-		Name: "Коптевский бул",
+		Name: "Коптевский",
 		Lat:  55.833222,
 		Lon:  37.525158,
 	},
@@ -43,7 +40,7 @@ var stations []service.Station = []service.Station{
 		Lon:  37.612592,
 	},
 	{
-		Name: "Пролетарский проспект",
+		Name: "Пролетарский",
 		Lat:  55.635129,
 		Lon:  37.658684,
 	},
@@ -64,11 +61,9 @@ var stations []service.Station = []service.Station{
 	},
 }
 
-func TestStoreStation(t *testing.T) {
+func main() {
 	f := mongo.Fabric{
 		StationCollectionName:      "station",
-		EcoDataCollectionName:      "eco-data",
-		ProfilerDataCollectionName: "profiler",
 	}
 
 	st, err := f.NewStorage(
@@ -84,39 +79,4 @@ func TestStoreStation(t *testing.T) {
 	for _, station := range stations {
 		log.Println(st.StoreStation(context.Background(), station))
 	}
-}
-
-func TestStoreEcoData(t *testing.T) {
-	f := mongo.Fabric{
-		StationCollectionName:      "station",
-		EcoDataCollectionName:      "eco-data",
-		ProfilerDataCollectionName: "profiler",
-	}
-
-	st, err := f.NewStorage(
-		context.Background(),
-		"mongodb://neconetic:neconetic@127.0.0.1:27017",
-		"neconetic",
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	svc := service.New(
-		st,
-	)
-
-	file, err := os.Open("/home/geoirb/project/hackaton/nECOnetic/dataset/Академика Анохина 2020.xlsx")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	data := service.StationData{
-		StationName: "Академика Анохина",
-		FileName:    "Академика Анохина 2020.xlsx",
-		File:        file,
-		Type:        "eco",
-	}
-
-	fmt.Println(svc.AddDataFromStation(context.Background(), data))
 }

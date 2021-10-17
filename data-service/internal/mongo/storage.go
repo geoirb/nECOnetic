@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -34,15 +35,48 @@ func (f *Fabric) NewStorage(
 
 	s := &storage{}
 	s.stationCollection = db.Collection(f.StationCollectionName)
-	// TODO:
-	// 1. unique lat lon station
-	// 2. unique name station
+	s.stationCollection.Indexes().CreateMany(
+		ctx,
+		[]mongo.IndexModel{
+			{
+				Keys: bson.M{
+					"name": 1,
+				},
+				Options: options.Index().SetUnique(true),
+			},
+			{
+				Keys: bson.M{
+					"lat": 1,
+					"lon": 1,
+				},
+				Options: options.Index().SetUnique(true),
+			},
+		},
+	)
 
 	s.profilerDataCollection = db.Collection(f.ProfilerDataCollectionName)
-	// TODO:
-	// 1. unique station id and datatime
+	s.profilerDataCollection.Indexes().CreateOne(
+		ctx,
+		mongo.IndexModel{
+			Keys: bson.M{
+				"station_id": 1,
+				"datatime":   1,
+			},
+			Options: options.Index().SetUnique(true),
+		},
+	)
 
 	s.ecoDataCollection = db.Collection(f.EcoDataCollectionName)
+	s.ecoDataCollection.Indexes().CreateOne(
+		ctx,
+		mongo.IndexModel{
+			Keys: bson.M{
+				"station_id": 1,
+				"datatime":   1,
+			},
+			Options: options.Index().SetUnique(true),
+		},
+	)
 	// TODO:
 	// 1. station id must existing in station collection
 	// 2. unique station id and datatime

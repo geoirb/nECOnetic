@@ -1,9 +1,11 @@
 package service
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"io"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -36,7 +38,9 @@ func New(
 	}
 
 	s.dataHandler = map[string]func(context.Context, string, io.Reader) (err error){
-		"eco": s.ecoDataHandler,
+		"eco":         s.ecoDataHandler,
+		"wind":        s.windHandler,
+		"temperature": s.temperatureHandler,
 	}
 
 	return s
@@ -108,9 +112,82 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID string, r io.Rea
 			0,
 			0,
 			loc,
-		)
+		).Unix()
 
 		dataList = append(dataList, el)
 	}
 	return s.storage.StoreEcoData(ctx, dataList)
+}
+
+func (s *service) windHandler(ctx context.Context, stationID string, r io.Reader) (err error) {
+	in, err := excelize.OpenReader(r)
+	if err != nil {
+		return err
+	}
+
+	name := in.GetSheetName(0)
+	rows, err := in.GetRows(name)
+	if err != nil {
+		return err
+	}
+
+	dataRows := rows[2:]
+
+	dataList := make([]ProfilerData, 0, len(dataRows))
+
+	loc := time.Now().Location()
+	for _, d := range dataRows {
+		el := ProfilerData{
+			StationID: stationID,
+		}
+
+		var dt time.Time
+		dt, err = time.Parse("02/01/2006 15:04", d[0])
+		if err != nil {
+			continue
+		}
+		el.Datatime = time.Date(
+			dt.Year(),
+			dt.Month(),
+			dt.Day(),
+			dt.Hour(), dt.Minute(),
+			0,
+			0,
+			loc,
+		).Unix()
+
+		var windDirection int
+		windDirection, err = strconv.Atoi(d[1])
+		if err != nil {
+			continue
+		}
+		if windDirection < 0 || windDirection > 360 {
+			continue
+		}
+		el.WindDirection = &windDirection
+
+		var windSpeed int
+		windSpeed, err = strconv.Atoi(d[2])
+		if err != nil {
+			continue
+		}
+		el.WindSpeed = &windSpeed
+
+		dataList = append(dataList, el)
+	}
+	return s.storage.StoreProfilerData(ctx, dataList)
+}
+
+func (s *service) temperatureHandler(ctx context.Context, stationID string, r io.Reader) (err error) {
+	hRegexp := regexp.MustCompile(`data.*time.*OutsideTemperature.*Quality`)
+
+	scanner := bufio.NewScanner(r)
+	for scanner.Scan() {
+		if !hRegexp.Match(scanner.Bytes()) {
+			continue
+		}
+
+	}
+
+	return s.storage.StoreProfilerData(ctx, nil)
 }

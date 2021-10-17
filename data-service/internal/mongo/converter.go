@@ -15,17 +15,4 @@ func stationToMongo(src service.Station) station {
 	}
 }
 
-func ecoDataToMongo(srcList []service.EcoData) []interface{} {
-	dst := make([]interface{}, 0, len(srcList))
 
-	for _, src := range srcList {
-		el := ecoData{
-			Datatime:             src.Datatime,
-			Measurement:          src.Measurement,
-			PredictedMeasurement: src.PredictedMeasurement,
-		}
-		el.StationID, _ = primitive.ObjectIDFromHex(src.StationID)
-		dst = append(dst, el)
-	}
-	return dst
-}

@@ -11,7 +11,6 @@ func updateProfileData(src service.ProfilerData) (bson.M, bson.M) {
 	filter := bson.M{
 		"datatime": src.Datatime,
 	}
-
 	filter["_id"], _ = primitive.ObjectIDFromHex(src.StationID)
 
 	set := bson.M{
@@ -35,8 +34,69 @@ func updateProfileData(src service.ProfilerData) (bson.M, bson.M) {
 	return filter, bson.M{"$set": set}
 }
 
+func updateEcoData(src service.EcoData) (bson.M, bson.M) {
+	filter := bson.M{
+		"datatime": src.Datatime,
+	}
+	filter["_id"], _ = primitive.ObjectIDFromHex(src.StationID)
+
+	set := bson.M{
+		"datatime":              src.Datatime,
+		"predicted_measurement": src.PredictedMeasurement,
+	}
+
+	if len(src.Measurement) == 0 {
+		set["predicted_measurement"] = nil
+		set["measurement"] = src.Measurement
+	}
+
+	return filter, bson.M{"$set": set}
+}
+
 func stationFilter(filter service.StationFilter) bson.M {
 	return bson.M{
 		"name": filter.Name,
 	}
+}
+
+func ecoDataFilter(filter service.EcoDataFilter) bson.M {
+	f := bson.M{}
+
+	if filter.StationID != nil {
+		f["station_id"] = *filter.StationID
+	}
+
+	if filter.DatatimeFrom != nil {
+		f["timestamp"] = bson.M{
+			"$gte": *filter.DatatimeFrom,
+		}
+	}
+
+	if filter.DatatimeTo != nil {
+		f["timestamp"] = bson.M{
+			"$lte": *filter.DatatimeTo,
+		}
+	}
+	return f
+}
+
+func profilerDataFilter(filter service.ProfilerDataFilter) bson.M {
+	f := bson.M{}
+
+	if filter.StationID != nil {
+		f["station_id"] = *filter.StationID
+	}
+
+	if filter.DatatimeFrom != nil {
+		f["timestamp"] = bson.M{
+			"$gte": *filter.DatatimeFrom,
+		}
+	}
+
+	if filter.DatatimeTo != nil {
+		f["timestamp"] = bson.M{
+			"$lte": *filter.DatatimeTo,
+		}
+	}
+	return f
 }
