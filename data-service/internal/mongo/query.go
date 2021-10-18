@@ -9,13 +9,13 @@ import (
 
 func updateProfileData(src service.ProfilerData) (bson.M, bson.M) {
 	filter := bson.M{
-		"datatime": src.Datatime,
+		"timestamp": src.Timestamp,
 	}
-	filter["_id"], _ = primitive.ObjectIDFromHex(src.StationID)
+	filter["station_id"], _ = primitive.ObjectIDFromHex(src.StationID)
 
 	set := bson.M{
-		"_id":         filter["_id"],
-		"datatime":    src.Datatime,
+		"station_id":  filter["station_id"],
+		"timestamp":   src.Timestamp,
 		"temperature": src.Temperature,
 	}
 
@@ -36,12 +36,13 @@ func updateProfileData(src service.ProfilerData) (bson.M, bson.M) {
 
 func updateEcoData(src service.EcoData) (bson.M, bson.M) {
 	filter := bson.M{
-		"datatime": src.Datatime,
+		"timestamp": src.Timestamp,
 	}
-	filter["_id"], _ = primitive.ObjectIDFromHex(src.StationID)
+	filter["station_id"], _ = primitive.ObjectIDFromHex(src.StationID)
 
 	set := bson.M{
-		"datatime":              src.Datatime,
+		"station_id":            filter["station_id"],
+		"timestamp":             src.Timestamp,
 		"predicted_measurement": src.PredictedMeasurement,
 	}
 
@@ -66,15 +67,15 @@ func ecoDataFilter(filter service.EcoDataFilter) bson.M {
 		f["station_id"] = *filter.StationID
 	}
 
-	if filter.DatatimeFrom != nil {
+	if filter.TimestampFrom != nil {
 		f["timestamp"] = bson.M{
-			"$gte": *filter.DatatimeFrom,
+			"$gte": *filter.TimestampFrom,
 		}
 	}
 
-	if filter.DatatimeTo != nil {
+	if filter.TimestampTo != nil {
 		f["timestamp"] = bson.M{
-			"$lte": *filter.DatatimeTo,
+			"$lte": *filter.TimestampTo,
 		}
 	}
 	return f
@@ -87,15 +88,15 @@ func profilerDataFilter(filter service.ProfilerDataFilter) bson.M {
 		f["station_id"] = *filter.StationID
 	}
 
-	if filter.DatatimeFrom != nil {
+	if filter.TimestampFrom != nil {
 		f["timestamp"] = bson.M{
-			"$gte": *filter.DatatimeFrom,
+			"$gte": *filter.TimestampFrom,
 		}
 	}
 
-	if filter.DatatimeTo != nil {
+	if filter.TimestampTo != nil {
 		f["timestamp"] = bson.M{
-			"$lte": *filter.DatatimeTo,
+			"$lte": *filter.TimestampTo,
 		}
 	}
 	return f

@@ -3,7 +3,6 @@ package mongo
 import (
 	"context"
 
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/nECOnetic/data-service/internal/service"
@@ -11,29 +10,17 @@ import (
 
 // StoreProfilerData ...
 func (s *storage) StoreProfilerData(ctx context.Context, dataList []service.ProfilerData) error {
-	session, err := s.profilerDataCollection.Database().Client().StartSession()
-	if err != nil {
-		return err
-	}
-	defer session.EndSession(ctx)
-	if err = session.StartTransaction(); err != nil {
-		return err
-	}
+	for _, data := range dataList {
+		query, update := updateProfileData(data)
 
-	err = mongo.WithSession(ctx, session, func(sc mongo.SessionContext) error {
-		for _, data := range dataList {
-			query, update := updateProfileData(data)
-
-			opts := options.
-				Update().
-				SetUpsert(true)
-			if _, err := s.profilerDataCollection.UpdateOne(sc, query, update, opts); err != nil {
-				return err
-			}
+		opts := options.
+			Update().
+			SetUpsert(true)
+		if _, err := s.profilerDataCollection.UpdateOne(ctx, query, update, opts); err != nil {
+			return err
 		}
-		return nil
-	})
-	return err
+	}
+	return nil
 }
 
 // LoadProfilerData from storage.
@@ -57,7 +44,7 @@ func (s *storage) LoadProfilerData(ctx context.Context, filter service.ProfilerD
 			data,
 			service.ProfilerData{
 				StationID:          el.StationID.Hex(),
-				Datatime:           el.Datatime,
+				Timestamp:          el.Timestamp,
 				Temperature:        el.Temperature,
 				OutsideTemperature: el.OutsideTemperature,
 				WindDirection:      el.WindDirection,
@@ -67,3 +54,30 @@ func (s *storage) LoadProfilerData(ctx context.Context, filter service.ProfilerD
 	}
 	return data, err
 }
+
+// // StoreProfilerData ...
+// func (s *storage) StoreProfilerData(ctx context.Context, dataList []service.ProfilerData) error {
+// 	session, err := s.profilerDataCollection.Database().Client().StartSession()
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer session.EndSession(ctx)
+// 	if err = session.StartTransaction(); err != nil {
+// 		return err
+// 	}
+
+// 	err = mongo.WithSession(ctx, session, func(sc mongo.SessionContext) error {
+// 		for _, data := range dataList {
+// 			query, update := updateProfileData(data)
+
+// 			opts := options.
+// 				Update().
+// 				SetUpsert(true)
+// 			if _, err := s.profilerDataCollection.UpdateOne(sc, query, update, opts); err != nil {
+// 				return err
+// 			}
+// 		}
+// 		return nil
+// 	})
+// 	return err
+// }

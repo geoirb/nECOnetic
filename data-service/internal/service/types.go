@@ -21,23 +21,23 @@ type StationFilter struct {
 // EcoData received from station.
 type EcoData struct {
 	StationID            string
-	Datatime             int64
+	Timestamp            int64
 	Measurement          map[string]float64
 	PredictedMeasurement map[string]float64
 }
 
 // EcoDataFilter ...
 type EcoDataFilter struct {
-	StationID    *string
-	DatatimeFrom *time.Time
-	DatatimeTo   *time.Time
+	StationID     *string
+	TimestampFrom *time.Time
+	TimestampTo   *time.Time
 }
 
 // ProfileData received from station.
 type ProfilerData struct {
 	StationID          string
-	Datatime           int64
-	Temperature        map[int]float64
+	Timestamp          int64
+	Temperature        map[string]float64
 	OutsideTemperature *float64
 	WindDirection      *int
 	WindSpeed          *int
@@ -45,9 +45,9 @@ type ProfilerData struct {
 
 // ProfilerDataFilter ...
 type ProfilerDataFilter struct {
-	StationID    *string
-	DatatimeFrom *int64
-	DatatimeTo   *int64
+	StationID     *string
+	TimestampFrom *int64
+	TimestampTo   *int64
 }
 
 type StationData struct {

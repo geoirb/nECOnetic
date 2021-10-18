@@ -19,9 +19,21 @@ type storage struct {
 // NewStorage ...
 func (f *Fabric) NewStorage(
 	ctx context.Context,
-	connStr, databaseName string,
+	services []string,
+	username string,
+	password string,
+	databaseName string,
 ) (*storage, error) {
-	opts := options.Client().ApplyURI(connStr)
+
+	opts := options.Client().
+		SetAuth(
+			options.Credential{
+				Username: username,
+				Password: password,
+			},
+		).
+		SetHosts(services)
+
 	connect, err := mongo.Connect(ctx, opts)
 	if err != nil {
 		return nil, err
@@ -60,7 +72,7 @@ func (f *Fabric) NewStorage(
 		mongo.IndexModel{
 			Keys: bson.M{
 				"station_id": 1,
-				"datatime":   1,
+				"timestamp":  1,
 			},
 			Options: options.Index().SetUnique(true),
 		},
@@ -72,14 +84,14 @@ func (f *Fabric) NewStorage(
 		mongo.IndexModel{
 			Keys: bson.M{
 				"station_id": 1,
-				"datatime":   1,
+				"timestamp":  1,
 			},
 			Options: options.Index().SetUnique(true),
 		},
 	)
 	// TODO:
 	// 1. station id must existing in station collection
-	// 2. unique station id and datatime
+	// 2. unique station id and timestamp
 
 	return s, nil
 }

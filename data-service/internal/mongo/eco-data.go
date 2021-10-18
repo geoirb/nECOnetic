@@ -57,7 +57,7 @@ func (s *storage) LoadEcoData(ctx context.Context, filter service.EcoDataFilter)
 			data,
 			service.EcoData{
 				StationID:            el.StationID.Hex(),
-				Datatime:             el.Datatime,
+				Timestamp:            el.Timestamp,
 				Measurement:          el.Measurement,
 				PredictedMeasurement: el.PredictedMeasurement,
 			},

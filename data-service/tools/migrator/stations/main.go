@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/nECOnetic/data-service/internal/mongo"
 	"github.com/nECOnetic/data-service/internal/service"
@@ -63,12 +64,18 @@ var stations []service.Station = []service.Station{
 
 func main() {
 	f := mongo.Fabric{
-		StationCollectionName:      "station",
+		StationCollectionName: "station",
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	st, err := f.NewStorage(
-		context.Background(),
-		"mongodb://neconetic:neconetic@127.0.0.1:27017",
+		ctx,
+		[]string{
+			"127.0.0.1:27017",
+		},
+		"neconetic",
+		"neconetic",
 		"neconetic",
 	)
 

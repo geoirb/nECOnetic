@@ -58,3 +58,8 @@ func (s *service) AddDataFromStation(ctx context.Context, in StationData) error 
 
 	return h(ctx, stations[0].ID, in.File)
 }
+
+// AddPredictedData to storage.
+func (s *service) AddPredictedData(ctx context.Context, in []EcoData) error {
+	return s.storage.StoreEcoData(ctx, in)
+}
