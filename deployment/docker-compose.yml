@@ -2,7 +2,7 @@ version: "2"
 services:
     mongo:
         image: mongo
-        command: [ "--replSet", "neconetic", "--bind_ip", "0.0.0.0"]
+        command: [ "--replSet", "neconetic", "--bind_ip", "127.0.0.1"]
         environment:
             MONGO_INITDB_DATABASE: neconetic
             MONGO_REPLICA_SET_NAME: neconetic
