@@ -22,13 +22,13 @@ import (
 )
 
 type configuration struct {
-	HttpPort string `envconfig:"HTTP_PORT" default:"8081"`
+	HttpPort string `envconfig:"HTTP_PORT" default:"8000"`
 
-	StorageHosts                  []string `envconfig:"STORAGE_HOSTS" default:"127.0.0.1:27017"`
-	StorageUser                   string   `envconfig:"STORAGE_USER" default:"neconetic"`
-	StoragePassword               string   `envconfig:"STORAGE_PASSWORD" default:"neconetic"`
-	StorageDatabase               string   `envconfig:"STORAGE_DATABASE" default:"neconetic"`
-	StorageOperationInTransaction int      `envconfig:"STORAGE_TRANSACTION" default:"4000"`
+	StorageHost                   string `envconfig:"STORAGE_HOST" default:"127.0.0.1"`
+	StorageUser                   string `envconfig:"STORAGE_USER" default:"neconetic"`
+	StoragePassword               string `envconfig:"STORAGE_PASSWORD" default:"neconetic"`
+	StorageDatabase               string `envconfig:"STORAGE_DATABASE" default:"neconetic"`
+	StorageOperationInTransaction int    `envconfig:"STORAGE_TRANSACTION" default:"4000"`
 
 	StationCollectionName      string `envconfig:"STATION_COLLECTION_NAME" default:"station"`
 	EcoDataCollectionName      string `envconfig:"ECO_DATA_COLLECTION_NAME" default:"eco-data"`
@@ -67,9 +67,11 @@ func main() {
 		ProfilerDataCollectionName: cfg.ProfilerDataCollectionName,
 	}
 
+	fmt.Printf("%+v\n", cfg)
+
 	storage, err := f.NewStorage(
 		ctx,
-		cfg.StorageHosts,
+		[]string{cfg.StorageHost + ":27017"},
 		cfg.StorageUser,
 		cfg.StoragePassword,
 		cfg.StorageDatabase,
