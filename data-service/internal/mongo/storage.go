@@ -15,17 +15,17 @@ type storage struct {
 	ecoDataCollection      *mongo.Collection
 	profilerDataCollection *mongo.Collection
 
-	operationInTransaction int
+	transactionNumb int
 }
 
 // NewStorage ...
-func (f *Fabric) NewStorage(
+func (f *StorageFabric) NewStorage(
 	ctx context.Context,
-	services []string,
+	hosts []string,
 	username string,
 	password string,
 	databaseName string,
-	operationInTransaction int,
+	transactionNumb int,
 ) (*storage, error) {
 
 	opts := options.Client().
@@ -35,7 +35,7 @@ func (f *Fabric) NewStorage(
 				Password: password,
 			},
 		).
-		SetHosts(services)
+		SetHosts(hosts)
 
 	connect, err := mongo.Connect(ctx, opts)
 	if err != nil {
@@ -49,7 +49,7 @@ func (f *Fabric) NewStorage(
 	db := connect.Database(databaseName)
 
 	s := &storage{
-		operationInTransaction: operationInTransaction,
+		transactionNumb: transactionNumb,
 	}
 	s.stationCollection = db.Collection(f.StationCollectionName)
 	s.stationCollection.Indexes().CreateMany(

@@ -20,7 +20,7 @@ func (s *storage) StoreEcoData(ctx context.Context, dataList []service.EcoData) 
 	start := 0
 	err = mongo.WithSession(ctx, session, func(sc mongo.SessionContext) error {
 		for i, data := range dataList {
-			if i%s.operationInTransaction == 0 {
+			if i%s.transactionNumb == 0 {
 				start = i
 				if err = session.StartTransaction(); err != nil {
 					return err
@@ -35,7 +35,7 @@ func (s *storage) StoreEcoData(ctx context.Context, dataList []service.EcoData) 
 				return err
 			}
 
-			if i == start+s.operationInTransaction-1 || i == len(dataList)-1 {
+			if i == start+s.transactionNumb-1 || i == len(dataList)-1 {
 				if err = session.CommitTransaction(sc); err != nil {
 					return err
 				}

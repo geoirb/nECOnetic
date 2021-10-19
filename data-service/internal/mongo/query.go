@@ -77,9 +77,9 @@ func ecoDataFilter(filter service.EcoDataFilter) bson.M {
 		}
 	}
 
-	if filter.TimestampTo != nil {
+	if filter.TimestampTill != nil {
 		f["timestamp"] = bson.M{
-			"$lte": *filter.TimestampTo,
+			"$lte": *filter.TimestampTill,
 		}
 	}
 
@@ -113,9 +113,9 @@ func profilerDataFilter(filter service.ProfilerDataFilter) bson.M {
 		}
 	}
 
-	if filter.TimestampTo != nil {
+	if filter.TimestampTill != nil {
 		f["timestamp"] = bson.M{
-			"$lte": *filter.TimestampTo,
+			"$lte": *filter.TimestampTill,
 		}
 	}
 	return f

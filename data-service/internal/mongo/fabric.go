@@ -1,7 +1,7 @@
 package mongo
 
-// Fabric struct for simple and straightforward creating mongo storage.
-type Fabric struct {
+// StorageFabric struct for simple and straightforward creating mongo storage.
+type StorageFabric struct {
 	StationCollectionName      string
 	EcoDataCollectionName      string
 	ProfilerDataCollectionName string

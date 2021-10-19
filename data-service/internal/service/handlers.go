@@ -60,7 +60,13 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string
 
 		dataList = append(dataList, el)
 	}
-	return s.storage.StoreEcoData(ctx, dataList)
+
+	go func() {
+		if err := s.storage.StoreEcoData(ctx, dataList); err != nil {
+			level.Error(logger).Log("msg", "store eco data", "err", err)
+		}
+	}()
+	return nil
 }
 
 func (s *service) windHandler(ctx context.Context, stationID, fileName string, r io.Reader) (err error) {
@@ -112,7 +118,12 @@ func (s *service) windHandler(ctx context.Context, stationID, fileName string, r
 
 		dataList = append(dataList, el)
 	}
-	return s.storage.StoreProfilerData(ctx, dataList)
+	go func() {
+		if err := s.storage.StoreProfilerData(context.TODO(), dataList); err != nil {
+			level.Error(logger).Log("msg", "store wind data", "err", err)
+		}
+	}()
+	return nil
 }
 
 var (
@@ -159,7 +170,12 @@ func (s *service) temperatureHandler(ctx context.Context, stationID string, file
 		}
 	}
 
-	return s.storage.StoreProfilerData(ctx, dataList)
+	go func() {
+		if err := s.storage.StoreProfilerData(context.TODO(), dataList); err != nil {
+			level.Error(logger).Log("msg", "store temperature data", "err", err)
+		}
+	}()
+	return nil
 }
 
 var digitRegexp = regexp.MustCompile(`\t([-]?[0-9]+,?[0-9]*)`)

@@ -7,8 +7,8 @@ import (
 type station struct {
 	ID   primitive.ObjectID `bson:"_id"`
 	Name string             `bson:"name"`
-	Lon  float32            `bson:"lon"`
-	Lat  float32            `bson:"lat"`
+	Lat  float64            `bson:"lat"`
+	Lon  float64            `bson:"lon"`
 }
 
 type ecoData struct {

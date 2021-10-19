@@ -63,7 +63,7 @@ var stations []service.Station = []service.Station{
 }
 
 func main() {
-	f := mongo.Fabric{
+	f := mongo.StorageFabric{
 		StationCollectionName: "station",
 	}
 

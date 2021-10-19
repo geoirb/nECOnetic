@@ -31,7 +31,7 @@ var sources []struct {
 
 func main() {
 	logger := l.NewJSONLogger(l.NewSyncWriter(os.Stdout))
-	f := mongo.Fabric{
+	f := mongo.StorageFabric{
 		StationCollectionName: "station",
 		EcoDataCollectionName: "profiler-data",
 	}

@@ -2,15 +2,14 @@ package service
 
 import (
 	"io"
-	"time"
 )
 
 // Station data.
 type Station struct {
 	ID   string
 	Name string
-	Lon  float32
-	Lat  float32
+	Lat  float64
+	Lon  float64
 }
 
 // StationFilter ...
@@ -29,8 +28,8 @@ type EcoData struct {
 // EcoDataFilter ...
 type EcoDataFilter struct {
 	StationID     *string
-	TimestampFrom *time.Time
-	TimestampTo   *time.Time
+	TimestampFrom *int64
+	TimestampTill *int64
 	Measurements  []string
 }
 
@@ -48,7 +47,7 @@ type ProfilerData struct {
 type ProfilerDataFilter struct {
 	StationID     *string
 	TimestampFrom *int64
-	TimestampTo   *int64
+	TimestampTill *int64
 }
 
 type StationData struct {
@@ -59,14 +58,14 @@ type StationData struct {
 }
 
 type GetEcoData struct {
-	StationID     *string
-	TimestampFrom *time.Time
-	TimestampTo   *time.Time
+	StationName   *string
+	TimestampFrom *int64
+	TimestampTill *int64
 	Measurements  []string
 }
 
 type GetProfilerData struct {
 	StationID     *string
 	TimestampFrom *int64
-	TimestampTo   *int64
+	TimestampTill *int64
 }

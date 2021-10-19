@@ -87,7 +87,21 @@ func (s *service) GetStationList(ctx context.Context) ([]Station, error) {
 
 // GetEcoDataList ...
 func (s *service) GetEcoDataList(ctx context.Context, in GetEcoData) ([]EcoData, error) {
-	return s.storage.LoadEcoDataList(ctx, EcoDataFilter(in))
+	logger := log.WithPrefix(s.logger, "method", "GetEcoDataList")
+	stations, err := s.storage.LoadStationList(ctx, StationFilter{
+		Name: in.StationName,
+	})
+	if err != nil {
+		level.Error(logger).Log("msg", "load station fom storage", "err", err)
+		return nil, err
+	}
+	f := EcoDataFilter{
+		StationID:     &stations[0].ID,
+		TimestampFrom: in.TimestampFrom,
+		TimestampTill: in.TimestampTill,
+		Measurements:  in.Measurements,
+	}
+	return s.storage.LoadEcoDataList(ctx, f)
 }
 
 // GetProfilerDataList ...
