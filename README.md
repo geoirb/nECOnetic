@@ -26,7 +26,7 @@ db.isMaster()
 
 maintainers:
 
-- Морочев Георгий morochev.g@gmail.com
+- Морочев Георгий morochev.g@gmail.coma
 
 description:
  
