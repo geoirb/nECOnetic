@@ -2,10 +2,8 @@ version: "2"
 services:
     mongo:
         image: mongo
-        command: [ "--replSet", "neconetic", "--bind_ip", "127.0.0.1"]
         environment:
             MONGO_INITDB_DATABASE: neconetic
-            MONGO_REPLICA_SET_NAME: neconetic
         volumes:
             - ./data:/data/db
         ports:
@@ -16,7 +14,7 @@ services:
             context: ..
             dockerfile: docker/data-service/Dockerfile
         environment:
-            STORAGE_HOST: mongo
+            STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
         ports:
             - 8000:8000
         depends_on:
