@@ -62,6 +62,7 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string
 	}
 
 	go func() {
+		level.Debug(logger).Log("msg", "store eco data", "start", len(dataList))
 		if err := s.storage.StoreEcoData(ctx, dataList); err != nil {
 			level.Error(logger).Log("msg", "store eco data", "err", err)
 			return
@@ -121,6 +122,7 @@ func (s *service) windHandler(ctx context.Context, stationID, fileName string, r
 		dataList = append(dataList, el)
 	}
 	go func() {
+		level.Debug(logger).Log("msg", "store wind data", "start", len(dataList))
 		if err := s.storage.StoreProfilerData(context.TODO(), dataList); err != nil {
 			level.Error(logger).Log("msg", "store wind data", "err", err)
 			return
@@ -175,6 +177,7 @@ func (s *service) temperatureHandler(ctx context.Context, stationID string, file
 	}
 
 	go func() {
+		level.Debug(logger).Log("msg", "store temperature data", "start", len(dataList))
 		if err := s.storage.StoreProfilerData(context.TODO(), dataList); err != nil {
 			level.Error(logger).Log("msg", "store temperature data", "err", err)
 			return

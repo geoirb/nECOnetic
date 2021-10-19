@@ -13,7 +13,6 @@ var (
 
 	addStationURI     = prefix + "/station"
 	getStationListURI = prefix + "/station"
-
 	addStationDataURI = prefix + "/station/data"
 	getEcoDataListURI = prefix + "/station/eco-data"
 )

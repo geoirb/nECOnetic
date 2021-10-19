@@ -86,11 +86,12 @@ func newAddStationDataTransport(
 }
 
 func (*addStationDataTransport) DecodeRequest(r *http.Request) (data service.StationData, err error) {
-	if err = r.ParseForm(); err != nil {
+	if err = r.ParseMultipartForm(32 << 20); err != nil {
 		return
 	}
+	v := r.MultipartForm.Value
 
-	station := r.Form["station"]
+	station := v["station"]
 	if len(station) != 1 {
 		err = fmt.Errorf("wrong numbers of station values need: 1 have: %d", len(station))
 		return
@@ -165,7 +166,7 @@ func (t *getEcoDataListTransport) EncodeResponse(w http.ResponseWriter, data []s
 	res := ecoDataListResponse{
 		Data: make([]ecoDataResponse, 0, len(data)),
 	}
-	
+
 	for _, d := range data {
 		res.Data = append(res.Data, ecoDataResponse(d))
 	}
