@@ -2,6 +2,7 @@ FROM golang:alpine as builder
 
 LABEL maintainer="Morchev Georgiy <morochev.g@gmail.com>"
 
+WORKDIR /app
 COPY data-service/go.mod .
 COPY data-service/go.sum .
 RUN go mod download
