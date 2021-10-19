@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	l "github.com/go-kit/log"
+
 	"github.com/nECOnetic/data-service/internal/mongo"
 	"github.com/nECOnetic/data-service/internal/service"
 )
@@ -19,11 +21,12 @@ var (
 )
 
 func main() {
+	logger := l.NewJSONLogger(l.NewSyncWriter(os.Stdout))
 	f := mongo.Fabric{
 		StationCollectionName:      "station",
 		ProfilerDataCollectionName: "profiler-data",
 	}
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	st, err := f.NewStorage(
@@ -42,6 +45,7 @@ func main() {
 
 	svc := service.New(
 		st,
+		logger,
 	)
 	files, err := ioutil.ReadDir(srcDir)
 	if err != nil {
@@ -50,6 +54,8 @@ func main() {
 
 	for _, f := range files {
 		if strings.HasSuffix(f.Name(), ".txt") {
+			start := time.Now()
+			fmt.Println(f, start)
 			file, err := os.Open(srcDir + "/" + f.Name())
 			if err != nil {
 				log.Fatal(err)
@@ -63,6 +69,7 @@ func main() {
 			}
 
 			fmt.Println(svc.AddDataFromStation(context.Background(), data))
+			fmt.Println(time.Since(start).Minutes())
 		}
 
 	}

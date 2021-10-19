@@ -49,8 +49,8 @@ func (s *storage) StoreProfilerData(ctx context.Context, dataList []service.Prof
 	return err
 }
 
-// LoadProfilerData from storage.
-func (s *storage) LoadProfilerData(ctx context.Context, filter service.ProfilerDataFilter) ([]service.ProfilerData, error) {
+// LoadProfilerDataList ...
+func (s *storage) LoadProfilerDataList(ctx context.Context, filter service.ProfilerDataFilter) ([]service.ProfilerData, error) {
 	f := profilerDataFilter(filter)
 
 	cursor, err := s.profilerDataCollection.Find(ctx, f)

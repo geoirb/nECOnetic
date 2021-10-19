@@ -1,6 +1,8 @@
 package mongo
 
 import (
+	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
@@ -55,13 +57,15 @@ func updateEcoData(src service.EcoData) (bson.M, bson.M) {
 }
 
 func stationFilter(filter service.StationFilter) bson.M {
-	return bson.M{
-		"name": filter.Name,
+	f := make(bson.M)
+	if filter.Name != nil {
+		f["name"] = *filter.Name
 	}
+	return f
 }
 
 func ecoDataFilter(filter service.EcoDataFilter) bson.M {
-	f := bson.M{}
+	f := make(bson.M)
 
 	if filter.StationID != nil {
 		f["station_id"] = *filter.StationID
@@ -76,6 +80,21 @@ func ecoDataFilter(filter service.EcoDataFilter) bson.M {
 	if filter.TimestampTo != nil {
 		f["timestamp"] = bson.M{
 			"$lte": *filter.TimestampTo,
+		}
+	}
+
+	if len(filter.Measurements) != 0 {
+		for _, field := range filter.Measurements {
+			f["$or"] = []bson.M{
+				{fmt.Sprintf("measurement.%s", field): bson.M{
+					"$exists": true,
+				},
+				},
+				{fmt.Sprintf("predicted_measurement.%s", field): bson.M{
+					"$exists": true,
+				},
+				},
+			}
 		}
 	}
 	return f

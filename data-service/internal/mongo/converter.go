@@ -14,5 +14,3 @@ func stationToMongo(src service.Station) station {
 		Lat:  src.Lat,
 	}
 }
-
-

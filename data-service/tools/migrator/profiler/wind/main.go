@@ -7,6 +7,8 @@ import (
 	"os"
 	"time"
 
+	l "github.com/go-kit/log"
+
 	"github.com/nECOnetic/data-service/internal/mongo"
 	"github.com/nECOnetic/data-service/internal/service"
 )
@@ -28,6 +30,7 @@ var sources []struct {
 }
 
 func main() {
+	logger := l.NewJSONLogger(l.NewSyncWriter(os.Stdout))
 	f := mongo.Fabric{
 		StationCollectionName: "station",
 		EcoDataCollectionName: "profiler-data",
@@ -51,9 +54,12 @@ func main() {
 
 	svc := service.New(
 		st,
+		logger,
 	)
 
 	for _, src := range sources {
+		start := time.Now()
+		fmt.Println(src, start)
 		file, err := os.Open(src.filePath)
 		if err != nil {
 			log.Fatal(err)
@@ -67,5 +73,7 @@ func main() {
 		}
 
 		fmt.Println(svc.AddDataFromStation(context.Background(), data))
+		fmt.Println(time.Since(start).Minutes())
+
 	}
 }

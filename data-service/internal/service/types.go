@@ -15,7 +15,7 @@ type Station struct {
 
 // StationFilter ...
 type StationFilter struct {
-	Name string
+	Name *string
 }
 
 // EcoData received from station.
@@ -31,6 +31,7 @@ type EcoDataFilter struct {
 	StationID     *string
 	TimestampFrom *time.Time
 	TimestampTo   *time.Time
+	Measurements  []string
 }
 
 // ProfileData received from station.
@@ -55,4 +56,17 @@ type StationData struct {
 	FileName    string
 	File        io.Reader
 	Type        string
+}
+
+type GetEcoData struct {
+	StationID     *string
+	TimestampFrom *time.Time
+	TimestampTo   *time.Time
+	Measurements  []string
+}
+
+type GetProfilerData struct {
+	StationID     *string
+	TimestampFrom *int64
+	TimestampTo   *int64
 }

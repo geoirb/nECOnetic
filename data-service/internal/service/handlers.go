@@ -3,34 +3,37 @@ package service
 import (
 	"bufio"
 	"context"
-	"errors"
 	"io"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	// TODO:
+	// check https://github.com/tealeg/xlsx
+	"github.com/go-kit/log"
+	"github.com/go-kit/log/level"
 	"github.com/xuri/excelize/v2"
 )
 
-func (s *service) ecoDataHandler(ctx context.Context, stationID string, r io.Reader) (err error) {
+func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string, r io.Reader) (err error) {
+	logger := log.WithPrefix(s.logger, "method", "ecoDataHandler", "file", fileName)
+
 	in, err := excelize.OpenReader(r)
 	if err != nil {
+		level.Error(logger).Log("msg", "open", "err", err)
 		return err
 	}
 
 	name := in.GetSheetName(0)
-	rows, err := in.GetRows(name)
-	if err != nil {
-		return err
-	}
+	rows, _ := in.GetRows(name)
 
 	hRow := rows[0]
 	dataRows := rows[1:]
 
 	dataList := make([]EcoData, 0, len(dataRows))
-
-	for _, d := range dataRows {
+	for j, d := range dataRows {
+		logger = log.WithPrefix(logger, "line", j+2)
 		el := EcoData{
 			StationID:   stationID,
 			Measurement: make(map[string]float64),
@@ -39,16 +42,19 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID string, r io.Rea
 		for i := 1; i < len(hRow) && i < len(d); i++ {
 			if len(d[i]) != 0 && len(hRow[i]) != 0 {
 				if el.Measurement[hRow[i]], err = strconv.ParseFloat(d[i], 64); err != nil {
+					level.Error(logger).Log("msg", "parse data from file", "err", err)
 					return
 				}
 			}
 		}
 		if len(el.Measurement) == 0 || len(d[0]) == 0 {
+			level.Warn(logger).Log("msg", "measurements not found")
 			continue
 		}
 
 		el.Timestamp, err = parseTime(d[0])
 		if err != nil {
+			level.Error(logger).Log("msg", "parse datatime", "err", err)
 			return err
 		}
 
@@ -57,39 +63,41 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID string, r io.Rea
 	return s.storage.StoreEcoData(ctx, dataList)
 }
 
-func (s *service) windHandler(ctx context.Context, stationID string, r io.Reader) (err error) {
+func (s *service) windHandler(ctx context.Context, stationID, fileName string, r io.Reader) (err error) {
+	logger := log.WithPrefix(s.logger, "method", "ecoDataHandler", "file", fileName)
 	in, err := excelize.OpenReader(r)
 	if err != nil {
+		level.Error(logger).Log("msg", "open", "err", err)
 		return err
 	}
 
 	name := in.GetSheetName(0)
-	rows, err := in.GetRows(name)
-	if err != nil {
-		return err
-	}
+	rows, _ := in.GetRows(name)
 
 	dataRows := rows[2:]
 
 	dataList := make([]ProfilerData, 0, len(dataRows))
-
-	for _, d := range dataRows {
+	for j, d := range dataRows {
+		logger = log.WithPrefix(logger, "line", j+2)
 		el := ProfilerData{
 			StationID: stationID,
 		}
 
 		el.Timestamp, err = parseTime(d[0])
 		if err != nil {
+			level.Error(logger).Log("msg", "parse datatime", "err", err)
 			return err
 		}
 
 		var windDirection int
 		windDirection, err = strconv.Atoi(d[1])
 		if err != nil {
+			level.Error(logger).Log("msg", "parse data: windDirection from file", "err", err)
 			return err
 		}
 
 		if windDirection < 0 || windDirection > 360 {
+			level.Warn(logger).Log("msg", "measurements is not valide")
 			continue
 		}
 		el.WindDirection = &windDirection
@@ -97,9 +105,9 @@ func (s *service) windHandler(ctx context.Context, stationID string, r io.Reader
 		var windSpeed int
 		windSpeed, err = strconv.Atoi(d[2])
 		if err != nil {
+			level.Error(logger).Log("msg", "parse data: windSpeed from file", "err", err)
 			return err
 		}
-
 		el.WindSpeed = &windSpeed
 
 		dataList = append(dataList, el)
@@ -114,7 +122,8 @@ var (
 	dateRegexp = regexp.MustCompile(`^([\d]{2}\/[\d]{2}\/[\d]{4} [012]\d:[0-5]\d)`)
 )
 
-func (s *service) temperatureHandler(ctx context.Context, stationID string, r io.Reader) error {
+func (s *service) temperatureHandler(ctx context.Context, stationID string, fileName string, r io.Reader) (err error) {
+	logger := log.WithPrefix(s.logger, "method", "ecoDataHandler", "file", fileName)
 	var hights []string
 
 	dataList := make([]ProfilerData, 0, 288)
@@ -126,14 +135,15 @@ func (s *service) temperatureHandler(ctx context.Context, stationID string, r io
 		if dataRegexp.Match(scanner.Bytes()) {
 			timestemp, err := parseTime(string(dateRegexp.Find(scanner.Bytes())))
 			if err != nil {
+				level.Error(logger).Log("msg", "parse datatime", "err", err)
 				return err
 			}
 
 			measurements := parseDigits(scanner.Text())
 			if len(measurements)-2 != len(hights) {
-				// TODO:
-				// Log
-				return errors.New("error formate of data")
+				err = errFormateData
+				level.Error(logger).Log("msg", "validation data", "err", err)
+				return err
 			}
 			el := ProfilerData{
 				StationID:          stationID,

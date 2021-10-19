@@ -26,11 +26,14 @@ func (s *storage) StoreStation(ctx context.Context, st service.Station) (service
 	return st, err
 }
 
-// LoadStation ...
-func (s *storage) LoadStation(ctx context.Context, filter service.StationFilter) ([]service.Station, error) {
+// LoadStationList ...
+func (s *storage) LoadStationList(ctx context.Context, filter service.StationFilter) ([]service.Station, error) {
 	f := stationFilter(filter)
 
 	cursor, err := s.stationCollection.Find(ctx, f)
+	if cursor.RemainingBatchLength() == 0 {
+		return nil, errStationNotFound
+	}
 	// Check not found
 	if err != nil {
 		return nil, err

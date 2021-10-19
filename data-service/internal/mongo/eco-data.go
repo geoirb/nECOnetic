@@ -46,8 +46,8 @@ func (s *storage) StoreEcoData(ctx context.Context, dataList []service.EcoData) 
 	return err
 }
 
-// LoadEcoData from storage.
-func (s *storage) LoadEcoData(ctx context.Context, filter service.EcoDataFilter) ([]service.EcoData, error) {
+// LoadEcoDataList from storage.
+func (s *storage) LoadEcoDataList(ctx context.Context, filter service.EcoDataFilter) ([]service.EcoData, error) {
 	f := ecoDataFilter(filter)
 
 	cursor, err := s.ecoDataCollection.Find(ctx, f)
