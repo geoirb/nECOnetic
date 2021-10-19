@@ -105,13 +105,16 @@ func (*addStationDataTransport) DecodeRequest(r *http.Request) (data service.Sta
 	}
 	data.Type = dataType[0]
 
-	file, fileHeader, err := r.FormFile("data")
-	if err != nil {
+	fileHeader := r.MultipartForm.File["data"]
+	if len(fileHeader) != 1 {
+		err = fmt.Errorf("wrong numbers of data file values need: 1 have: %d", len(fileHeader))
 		return
 	}
 
-	data.FileName = fileHeader.Filename
-	data.File = file
+	data.FileName = fileHeader[0].Filename
+	if data.File, err = fileHeader[0].Open(); err != nil {
+		return
+	}
 
 	return
 }
