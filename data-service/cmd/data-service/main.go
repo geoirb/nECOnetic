@@ -24,9 +24,7 @@ import (
 type configuration struct {
 	HttpPort string `envconfig:"HTTP_PORT" default:"8000"`
 
-	StorageHost                   string `envconfig:"STORAGE_HOST" default:"127.0.0.1"`
-	StorageUser                   string `envconfig:"STORAGE_USER" default:"neconetic"`
-	StoragePassword               string `envconfig:"STORAGE_PASSWORD" default:"neconetic"`
+	StorageURI                    string `envconfig:"STORAGE_URI" default:"mongodb://localhost:27017/?readPreference=primary&ssl=false"`
 	StorageDatabase               string `envconfig:"STORAGE_DATABASE" default:"neconetic"`
 	StorageOperationInTransaction int    `envconfig:"STORAGE_TRANSACTION" default:"4000"`
 
@@ -56,7 +54,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	level.Error(logger).Log("msg", "initialization")
+	level.Error(logger).Log("msg", "initialization", "cfg", cfg)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -67,13 +65,9 @@ func main() {
 		ProfilerDataCollectionName: cfg.ProfilerDataCollectionName,
 	}
 
-	fmt.Printf("%+v\n", cfg)
-
 	storage, err := f.NewStorage(
 		ctx,
-		[]string{cfg.StorageHost + ":27017"},
-		cfg.StorageUser,
-		cfg.StoragePassword,
+		cfg.StorageURI,
 		cfg.StorageDatabase,
 		cfg.StorageOperationInTransaction,
 	)

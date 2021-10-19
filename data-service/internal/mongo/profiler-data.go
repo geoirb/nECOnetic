@@ -9,8 +9,8 @@ import (
 	"github.com/nECOnetic/data-service/internal/service"
 )
 
-// StoreProfilerData ...
-func (s *storage) StoreProfilerData(ctx context.Context, dataList []service.ProfilerData) error {
+// StoreProfilerDataTrx ...
+func (s *storage) StoreProfilerDataTrx(ctx context.Context, dataList []service.ProfilerData) error {
 	session, err := s.profilerDataCollection.Database().Client().StartSession()
 	if err != nil {
 		return err
@@ -47,6 +47,22 @@ func (s *storage) StoreProfilerData(ctx context.Context, dataList []service.Prof
 		return nil
 	})
 	return err
+}
+
+// StoreProfilerData ...
+func (s *storage) StoreProfilerData(ctx context.Context, dataList []service.ProfilerData) error {
+	for _, data := range dataList {
+
+		query, update := updateProfileData(data)
+
+		opts := options.
+			Update().
+			SetUpsert(true)
+		if _, err := s.profilerDataCollection.UpdateOne(ctx, query, update, opts); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // LoadProfilerDataList ...

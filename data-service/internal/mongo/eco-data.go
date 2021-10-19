@@ -9,8 +9,8 @@ import (
 	"github.com/nECOnetic/data-service/internal/service"
 )
 
-// StoreEcoData in storage.
-func (s *storage) StoreEcoData(ctx context.Context, dataList []service.EcoData) error {
+// StoreEcoDataTrx in storage.
+func (s *storage) StoreEcoDataTrx(ctx context.Context, dataList []service.EcoData) error {
 	session, err := s.ecoDataCollection.Database().Client().StartSession()
 	if err != nil {
 		return err
@@ -44,6 +44,22 @@ func (s *storage) StoreEcoData(ctx context.Context, dataList []service.EcoData) 
 		return nil
 	})
 	return err
+}
+
+// StoreEcoData in storage.
+func (s *storage) StoreEcoData(ctx context.Context, dataList []service.EcoData) error {
+	for _, data := range dataList {
+
+		query, update := updateEcoData(data)
+		opts := options.
+			Update().
+			SetUpsert(true)
+		if _, err := s.ecoDataCollection.UpdateOne(ctx, query, update, opts); err != nil {
+			return err
+		}
+
+	}
+	return nil
 }
 
 // LoadEcoDataList from storage.

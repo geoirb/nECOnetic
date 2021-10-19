@@ -21,21 +21,12 @@ type storage struct {
 // NewStorage ...
 func (f *StorageFabric) NewStorage(
 	ctx context.Context,
-	hosts []string,
-	username string,
-	password string,
+	uri string,
 	databaseName string,
 	transactionNumb int,
 ) (*storage, error) {
 
-	opts := options.Client().
-		SetAuth(
-			options.Credential{
-				Username: username,
-				Password: password,
-			},
-		).
-		SetHosts(hosts)
+	opts := options.Client().ApplyURI(uri)
 
 	connect, err := mongo.Connect(ctx, opts)
 	if err != nil {

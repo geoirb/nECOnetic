@@ -31,11 +31,7 @@ func main() {
 	defer cancel()
 	st, err := f.NewStorage(
 		ctx,
-		[]string{
-			"127.0.0.1:27017",
-		},
-		"neconetic",
-		"neconetic",
+		"mongodb://localhost:27017/?readPreference=primary&ssl=false",
 		"neconetic",
 		7000,
 	)
