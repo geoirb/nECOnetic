@@ -16,19 +16,29 @@ func (s *storage) StoreEcoData(ctx context.Context, dataList []service.EcoData) 
 		return err
 	}
 	defer session.EndSession(ctx)
-	if err = session.StartTransaction(); err != nil {
-		return err
-	}
 
+	start := 0
 	err = mongo.WithSession(ctx, session, func(sc mongo.SessionContext) error {
-		for _, data := range dataList {
-			query, update := updateEcoData(data)
+		for i, data := range dataList {
+			if i%s.operationInTransaction == 0 {
+				start = i
+				if err = session.StartTransaction(); err != nil {
+					return err
+				}
+			}
 
+			query, update := updateEcoData(data)
 			opts := options.
 				Update().
 				SetUpsert(true)
 			if _, err := s.ecoDataCollection.UpdateOne(sc, query, update, opts); err != nil {
 				return err
+			}
+
+			if i == start+s.operationInTransaction-1 || i == len(dataList)-1 {
+				if err = session.CommitTransaction(sc); err != nil {
+					return err
+				}
 			}
 		}
 		return nil

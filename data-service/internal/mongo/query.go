@@ -46,7 +46,7 @@ func updateEcoData(src service.EcoData) (bson.M, bson.M) {
 		"predicted_measurement": src.PredictedMeasurement,
 	}
 
-	if len(src.Measurement) == 0 {
+	if len(src.Measurement) != 0 {
 		set["predicted_measurement"] = nil
 		set["measurement"] = src.Measurement
 	}

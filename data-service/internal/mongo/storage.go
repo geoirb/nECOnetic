@@ -14,6 +14,8 @@ type storage struct {
 	stationCollection      *mongo.Collection
 	ecoDataCollection      *mongo.Collection
 	profilerDataCollection *mongo.Collection
+
+	operationInTransaction int
 }
 
 // NewStorage ...
@@ -23,6 +25,7 @@ func (f *Fabric) NewStorage(
 	username string,
 	password string,
 	databaseName string,
+	operationInTransaction int,
 ) (*storage, error) {
 
 	opts := options.Client().
@@ -45,7 +48,9 @@ func (f *Fabric) NewStorage(
 
 	db := connect.Database(databaseName)
 
-	s := &storage{}
+	s := &storage{
+		operationInTransaction: operationInTransaction,
+	}
 	s.stationCollection = db.Collection(f.StationCollectionName)
 	s.stationCollection.Indexes().CreateMany(
 		ctx,
