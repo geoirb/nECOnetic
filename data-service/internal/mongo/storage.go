@@ -43,7 +43,7 @@ func (f *StorageFabric) NewStorage(
 		transactionNumb: transactionNumb,
 	}
 	s.stationCollection = db.Collection(f.StationCollectionName)
-	s.stationCollection.Indexes().CreateMany(
+	_, err = s.stationCollection.Indexes().CreateMany(
 		ctx,
 		[]mongo.IndexModel{
 			{
@@ -53,41 +53,69 @@ func (f *StorageFabric) NewStorage(
 				Options: options.Index().SetUnique(true),
 			},
 			{
-				Keys: bson.M{
-					"lat": 1,
-					"lon": 1,
+				Keys: bson.D{
+					{
+						Key:   "lat",
+						Value: 1,
+					},
+					{
+						Key:   "lon",
+						Value: 1,
+					},
 				},
 				Options: options.Index().SetUnique(true),
 			},
 		},
 	)
+	if err != nil {
+		return nil, err
+	}
 
 	s.profilerDataCollection = db.Collection(f.ProfilerDataCollectionName)
-	s.profilerDataCollection.Indexes().CreateOne(
+	_, err = s.profilerDataCollection.Indexes().CreateOne(
 		ctx,
 		mongo.IndexModel{
-			Keys: bson.M{
-				"station_id": 1,
-				"timestamp":  1,
+			Keys: bson.D{
+				{
+					Key:   "station_id",
+					Value: 1,
+				},
+				{
+					Key:   "timestamp",
+					Value: 1,
+				},
 			},
 			Options: options.Index().SetUnique(true),
 		},
 	)
+	if err != nil {
+		return nil, err
+	}
 
 	s.ecoDataCollection = db.Collection(f.EcoDataCollectionName)
-	s.ecoDataCollection.Indexes().CreateOne(
+	_, err = s.ecoDataCollection.Indexes().CreateOne(
 		ctx,
 		mongo.IndexModel{
-			Keys: bson.M{
-				"station_id": 1,
-				"timestamp":  1,
+			Keys: bson.D{
+				{
+					Key:   "station_id",
+					Value: 1,
+				},
+				{
+					Key:   "timestamp",
+					Value: 1,
+				},
 			},
 			Options: options.Index().SetUnique(true),
 		},
 	)
+	if err != nil {
+		return nil, err
+	}
+
 	// TODO:
 	// 1. station id must existing in station collection
 	// 2. unique station id and timestamp
 
-	return s, nil
+	return s, err
 }

@@ -67,7 +67,6 @@ func (s *storage) LoadEcoDataList(ctx context.Context, filter service.EcoDataFil
 	f := ecoDataFilter(filter)
 
 	cursor, err := s.ecoDataCollection.Find(ctx, f)
-	// Check not found
 	if err != nil {
 		return nil, err
 	}

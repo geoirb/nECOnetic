@@ -76,7 +76,10 @@ func main() {
 		os.Exit(1)
 	}
 
+	ctxSvc, cancelSvc := context.WithCancel(context.Background())
+	defer cancelSvc()
 	svc := service.New(
+		ctxSvc,
 		storage,
 
 		logger,

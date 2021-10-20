@@ -68,7 +68,7 @@ func ecoDataFilter(filter service.EcoDataFilter) bson.M {
 	f := make(bson.M)
 
 	if filter.StationID != nil {
-		f["station_id"] = *filter.StationID
+		f["station_id"], _ = primitive.ObjectIDFromHex(*filter.StationID)
 	}
 
 	if filter.TimestampFrom != nil {

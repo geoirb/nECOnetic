@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	// TODO:
+	// Background:
 	// check https://github.com/tealeg/xlsx
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
@@ -64,12 +64,13 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string
 	}
 
 	go func() {
+		start := time.Now()
 		level.Debug(logger).Log("msg", "store eco data", "start", len(dataList))
-		if err := s.storage.StoreEcoData(ctx, dataList); err != nil {
+		if err = s.storage.StoreEcoData(s.ctx, dataList); err != nil {
 			level.Error(logger).Log("msg", "store eco data", "err", err)
 			return
 		}
-		level.Debug(logger).Log("msg", "store eco data")
+		level.Debug(logger).Log("msg", "store eco data", "sec", time.Since(start).Seconds())
 	}()
 	return nil
 }
@@ -125,12 +126,13 @@ func (s *service) windHandler(ctx context.Context, stationID, fileName string, r
 		dataList = append(dataList, el)
 	}
 	go func() {
+		start := time.Now()
 		level.Debug(logger).Log("msg", "store wind data", "start", len(dataList))
-		if err := s.storage.StoreProfilerData(context.TODO(), dataList); err != nil {
+		if err := s.storage.StoreProfilerData(s.ctx, dataList); err != nil {
 			level.Error(logger).Log("msg", "store wind data", "err", err)
 			return
 		}
-		level.Debug(logger).Log("msg", "store wind data")
+		level.Debug(logger).Log("msg", "store wind data", "sec", time.Since(start).Seconds())
 	}()
 	return nil
 }
@@ -186,12 +188,13 @@ func (s *service) temperatureHandler(ctx context.Context, stationID string, file
 	}
 
 	go func() {
+		start := time.Now()
 		level.Debug(logger).Log("msg", "store temperature data", "start", len(dataList))
-		if err := s.storage.StoreProfilerData(context.TODO(), dataList); err != nil {
+		if err := s.storage.StoreProfilerData(s.ctx, dataList); err != nil {
 			level.Error(logger).Log("msg", "store temperature data", "err", err)
 			return
 		}
-		level.Debug(logger).Log("msg", "store temperature data")
+		level.Debug(logger).Log("msg", "store temperature data", "sec", time.Since(start).Seconds())
 	}()
 	return nil
 }

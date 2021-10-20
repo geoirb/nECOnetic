@@ -25,60 +25,61 @@ var sources []struct {
 	{
 		stationName: "Академика Анохина",
 		fileName:    "Академика Анохина 2020.xlsx",
-		filePath:    "../dataset/Академика Анохина 2020.xlsx",
+		filePath:    "/home/geoirb/project/nECOnetic/dataset/Академика Анохина 2020.xlsx",
 	},
-	{
-		stationName: "Бутлерова",
-		fileName:    "Бутлерова 2020.xlsx",
-		filePath:    "../dataset/Бутлерова 2020.xlsx",
-	},
-	{
-		stationName: "Глебовская",
-		fileName:    "Глебовская 2020 год.xlsx",
-		filePath:    "../dataset/Глебовская 2020 год.xlsx",
-	},
-	{
-		stationName: "Коптевский",
-		fileName:    "Коптевский бул. 2020 год.xlsx",
-		filePath:    "../dataset/Коптевский бул. 2020 год.xlsx",
-	},
-	{
-		stationName: "Марьино",
-		fileName:    "Марьино 2020.xlsx",
-		filePath:    "../dataset/Марьино 2020.xlsx",
-	},
-	{
-		stationName: "Останкино",
-		fileName:    "Останкино 0 2020 год.xlsx",
-		filePath:    "../dataset/Останкино 0 2020 год.xlsx",
-	},
-	{
-		stationName: "Пролетарский",
-		fileName:    "Пролетарский проспект 2020.xlsx",
-		filePath:    "../dataset/Пролетарский проспект 2020.xlsx",
-	},
-	{
-		stationName: "Спиридоновка",
-		fileName:    "Спиридоновка ул. 2020 год.xlsx",
-		filePath:    "../dataset/Спиридоновка ул. 2020 год.xlsx",
-	},
-	{
-		stationName: "Туристская",
-		fileName:    "Туристская 2020 год.xlsx",
-		filePath:    "../dataset/Туристская 2020 год.xlsx",
-	},
-	{
-		stationName: "Шаболовка",
-		fileName:    "Шаболовка 2020 год.xlsx",
-		filePath:    "../dataset/Шаболовка 2020.xlsx",
-	},
+	// {
+	// 	stationName: "Бутлерова",
+	// 	fileName:    "Бутлерова 2020.xlsx",
+	// 	filePath:    "../dataset/Бутлерова 2020.xlsx",
+	// },
+	// {
+	// 	stationName: "Глебовская",
+	// 	fileName:    "Глебовская 2020 год.xlsx",
+	// 	filePath:    "../dataset/Глебовская 2020 год.xlsx",
+	// },
+	// {
+	// 	stationName: "Коптевский",
+	// 	fileName:    "Коптевский бул. 2020 год.xlsx",
+	// 	filePath:    "../dataset/Коптевский бул. 2020 год.xlsx",
+	// },
+	// {
+	// 	stationName: "Марьино",
+	// 	fileName:    "Марьино 2020.xlsx",
+	// 	filePath:    "../dataset/Марьино 2020.xlsx",
+	// },
+	// {
+	// 	stationName: "Останкино",
+	// 	fileName:    "Останкино 0 2020 год.xlsx",
+	// 	filePath:    "../dataset/Останкино 0 2020 год.xlsx",
+	// },
+	// {
+	// 	stationName: "Пролетарский",
+	// 	fileName:    "Пролетарский проспект 2020.xlsx",
+	// 	filePath:    "../dataset/Пролетарский проспект 2020.xlsx",
+	// },
+	// {
+	// 	stationName: "Спиридоновка",
+	// 	fileName:    "Спиридоновка ул. 2020 год.xlsx",
+	// 	filePath:    "../dataset/Спиридоновка ул. 2020 год.xlsx",
+	// },
+	// {
+	// 	stationName: "Туристская",
+	// 	fileName:    "Туристская 2020 год.xlsx",
+	// 	filePath:    "../dataset/Туристская 2020 год.xlsx",
+	// },
+	// {
+	// 	stationName: "Шаболовка",
+	// 	fileName:    "Шаболовка 2020 год.xlsx",
+	// 	filePath:    "../dataset/Шаболовка 2020.xlsx",
+	// },
 }
 
 func main() {
 	logger := l.NewJSONLogger(l.NewSyncWriter(os.Stdout))
 	f := mongo.StorageFabric{
-		StationCollectionName: "station",
-		EcoDataCollectionName: "eco-data",
+		StationCollectionName:      "station",
+		EcoDataCollectionName:      "eco-data",
+		ProfilerDataCollectionName: "profiler-data",
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -94,6 +95,7 @@ func main() {
 	}
 
 	svc := service.New(
+		context.Background(),
 		st,
 		logger,
 	)
@@ -116,6 +118,7 @@ func main() {
 		if err = svc.AddDataFromStation(context.Background(), data); err != nil {
 			log.Fatal(err)
 		}
+		
 		fmt.Println(time.Since(start).Minutes())
 	}
 }
