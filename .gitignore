@@ -1,1 +1,2 @@
-/storage/deployment/data
+/deployment/data/*
+.~*
