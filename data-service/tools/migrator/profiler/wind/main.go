@@ -32,8 +32,9 @@ var sources []struct {
 func main() {
 	logger := l.NewJSONLogger(l.NewSyncWriter(os.Stdout))
 	f := mongo.StorageFabric{
-		StationCollectionName: "station",
-		EcoDataCollectionName: "profiler-data",
+		StationCollectionName:      "station",
+		EcoDataCollectionName:      "eco-data",
+		ProfilerDataCollectionName: "profiler-data",
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

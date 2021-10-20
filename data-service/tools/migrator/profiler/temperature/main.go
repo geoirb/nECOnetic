@@ -24,6 +24,7 @@ func main() {
 	logger := l.NewJSONLogger(l.NewSyncWriter(os.Stdout))
 	f := mongo.StorageFabric{
 		StationCollectionName:      "station",
+		EcoDataCollectionName:      "eco-data",
 		ProfilerDataCollectionName: "profiler-data",
 	}
 
