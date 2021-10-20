@@ -25,7 +25,7 @@ var sources []struct {
 	{
 		stationName: "Останкино",
 		fileName:    "03_метео_Останкино.xls",
-		filePath:    "../dataset/profiler/03_метео_Останкино.xls",
+		filePath:    "../dataset/profiler/wind/03_метео_Останкино.xls",
 	},
 }
 

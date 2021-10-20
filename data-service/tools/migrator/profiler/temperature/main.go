@@ -17,7 +17,7 @@ import (
 
 var (
 	stationName = "Останкино"
-	srcDir      = "../dataset/profiler"
+	srcDir      = "../dataset/profiler/temperature"
 )
 
 func main() {
