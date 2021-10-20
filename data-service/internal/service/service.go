@@ -63,7 +63,7 @@ func (s *service) AddDataFromStation(ctx context.Context, in StationData) error 
 
 	stations, err := s.storage.LoadStationList(ctx, stationFilter)
 	if err != nil {
-		level.Error(logger).Log("msg", "load station fom storage", "err", err)
+		level.Error(logger).Log("msg", "load station from storage", "err", err)
 		return err
 	}
 

@@ -25,6 +25,7 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string
 		return err
 	}
 
+	// TODO: for quick name of first sheet must be const
 	name := in.GetSheetName(0)
 	rows, _ := in.GetRows(name)
 
@@ -33,7 +34,8 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string
 
 	dataList := make([]EcoData, 0, len(dataRows))
 	for j, d := range dataRows {
-		logger = log.WithPrefix(logger, "line", j+2)
+		lineNumb := j + 2
+		logger := log.WithPrefix(logger, "line", lineNumb)
 		el := EcoData{
 			StationID:   stationID,
 			Measurement: make(map[string]float64),
@@ -87,7 +89,8 @@ func (s *service) windHandler(ctx context.Context, stationID, fileName string, r
 
 	dataList := make([]ProfilerData, 0, len(dataRows))
 	for j, d := range dataRows {
-		logger = log.WithPrefix(logger, "line", j+2)
+		lineNumb := j + 2
+		logger := log.WithPrefix(logger, "line", lineNumb)
 		el := ProfilerData{
 			StationID: stationID,
 		}
@@ -141,11 +144,17 @@ var (
 
 func (s *service) temperatureHandler(ctx context.Context, stationID string, fileName string, r io.Reader) (err error) {
 	logger := log.WithPrefix(s.logger, "method", "ecoDataHandler", "file", fileName)
-	var hights []string
+
+	var (
+		hights   []string
+		lineNumb int
+	)
 
 	dataList := make([]ProfilerData, 0, 288)
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
+		lineNumb++
+		logger := log.WithPrefix(logger, "line", lineNumb)
 		if headerRegexp.Match(scanner.Bytes()) {
 			hights = parseHights(scanner.Text())
 		}

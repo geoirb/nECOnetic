@@ -7,6 +7,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/stretchr/testify v1.7.0
+	github.com/tealeg/xlsx v1.0.5
 	github.com/xuri/excelize/v2 v2.4.1
 	go.mongodb.org/mongo-driver v1.7.3
 	golang.org/x/net v0.0.0-20210917221730-978cfadd31cf
