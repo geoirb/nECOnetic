@@ -25,7 +25,7 @@ var sources []struct {
 	{
 		stationName: "Академика Анохина",
 		fileName:    "Академика Анохина 2020.xlsx",
-		filePath:    "/home/geoirb/project/nECOnetic/dataset/Академика Анохина 2020.xlsx",
+		filePath:    "../dataset/Академика Анохина 2020.xlsx",
 	},
 	// {
 	// 	stationName: "Бутлерова",
@@ -46,6 +46,16 @@ var sources []struct {
 	// 	stationName: "Марьино",
 	// 	fileName:    "Марьино 2020.xlsx",
 	// 	filePath:    "../dataset/Марьино 2020.xlsx",
+	// },
+	// {
+	// 	stationName: "Останкино",
+	// 	fileName:    "Останкино 0 2020 год.xlsx",
+	// 	filePath:    "../dataset/Останкино 0 2018 год.xlsx",
+	// },
+	// {
+	// 	stationName: "Останкино",
+	// 	fileName:    "Останкино 0 2020 год.xlsx",
+	// 	filePath:    "../dataset/Останкино 0 2019 год.xlsx",
 	// },
 	// {
 	// 	stationName: "Останкино",
@@ -101,8 +111,6 @@ func main() {
 	)
 
 	for _, src := range sources {
-		start := time.Now()
-		fmt.Println(src, start)
 		file, err := os.Open(src.filePath)
 		if err != nil {
 			log.Fatal(err)
@@ -118,7 +126,8 @@ func main() {
 		if err = svc.AddDataFromStation(context.Background(), data); err != nil {
 			log.Fatal(err)
 		}
-		
-		fmt.Println(time.Since(start).Minutes())
 	}
+
+	var a int
+	fmt.Scan(&a)
 }
