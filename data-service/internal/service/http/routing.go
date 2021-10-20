@@ -11,10 +11,11 @@ import (
 var (
 	prefix = "/api/v1/data-service"
 
-	addStationURI     = prefix + "/station"
-	getStationListURI = prefix + "/station"
-	addStationDataURI = prefix + "/station/data"
-	getEcoDataListURI = prefix + "/station/eco-data"
+	addStationURI          = prefix + "/station"
+	getStationListURI      = prefix + "/station"
+	addStationDataURI      = prefix + "/station/data"
+	getEcoDataListURI      = prefix + "/station/eco-data"
+	getProfilerDataListURI = prefix + "/station/profiler-data"
 )
 
 type buildResponseFunc func(payload interface{}, err error) ([]byte, error)
@@ -26,4 +27,5 @@ func Routing(r *mux.Router, svc service.Storage, build buildResponseFunc) {
 
 	r.Handle(addStationDataURI, addStationDataHandler(svc, build)).Methods(http.MethodPost)
 	r.Handle(getEcoDataListURI, getEcoDataListHandler(svc, build)).Methods(http.MethodGet)
+	r.Handle(getProfilerDataListURI, getProfilerDataListHandler(svc, build)).Methods(http.MethodGet)
 }

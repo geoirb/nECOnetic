@@ -18,8 +18,6 @@ type storage interface {
 	LoadProfilerDataList(ctx context.Context, filter ProfilerDataFilter) ([]ProfilerData, error)
 }
 
-// TODO:
-// Logging
 
 type service struct {
 	ctx         context.Context
@@ -116,5 +114,23 @@ func (s *service) GetEcoDataList(ctx context.Context, in GetEcoData) ([]EcoData,
 
 // GetProfilerDataList ...
 func (s *service) GetProfilerDataList(ctx context.Context, in GetProfilerData) ([]ProfilerData, error) {
-	return s.storage.LoadProfilerDataList(ctx, ProfilerDataFilter(in))
+	logger := log.WithPrefix(s.logger, "method", "GetEcoDataList")
+
+	f := ProfilerDataFilter{
+		TimestampFrom: in.TimestampFrom,
+		TimestampTill: in.TimestampTill,
+	}
+
+	if in.StationName != nil {
+		stations, err := s.storage.LoadStationList(ctx, StationFilter{
+			Name: in.StationName,
+		})
+		if err != nil {
+			level.Error(logger).Log("msg", "load station fom storage", "err", err)
+			return nil, err
+		}
+
+		f.StationID = &stations[0].ID
+	}
+	return s.storage.LoadProfilerDataList(ctx, f)
 }

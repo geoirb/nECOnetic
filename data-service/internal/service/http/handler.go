@@ -92,3 +92,26 @@ func getEcoDataListHandler(svc service.Storage, build buildResponseFunc) http.Ha
 		transport: newGetEcoDataListTransport(build),
 	}
 }
+
+type getProfilerDataListServer struct {
+	svc       service.Storage
+	transport *getProfilerDataListTransport
+}
+
+func (s *getProfilerDataListServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	filter, err := s.transport.DecodeRequest(r)
+
+	var data []service.ProfilerData
+	if err == nil {
+		data, err = s.svc.GetProfilerDataList(r.Context(), filter)
+	}
+
+	s.transport.EncodeResponse(w, data, err)
+}
+
+func getProfilerDataListHandler(svc service.Storage, build buildResponseFunc) http.Handler {
+	return &getProfilerDataListServer{
+		svc:       svc,
+		transport: newGetProfilerDataListTransport(build),
+	}
+}
