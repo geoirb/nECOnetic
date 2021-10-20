@@ -17,7 +17,7 @@ import (
 
 var (
 	stationName = "Останкино"
-	srcDir      = "../dataset/profiler/temperature"
+	srcDir      = "/home/geoirb/project/nECOnetic/dataset/profiler/temperature"
 )
 
 func main() {

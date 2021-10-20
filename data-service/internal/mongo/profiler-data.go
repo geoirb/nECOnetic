@@ -52,7 +52,6 @@ func (s *storage) StoreProfilerDataTrx(ctx context.Context, dataList []service.P
 // StoreProfilerData ...
 func (s *storage) StoreProfilerData(ctx context.Context, dataList []service.ProfilerData) error {
 	for _, data := range dataList {
-
 		query, update := updateProfileData(data)
 
 		opts := options.
