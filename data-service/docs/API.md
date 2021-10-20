@@ -161,7 +161,7 @@ curl --request POST \
 
 ## Получение списка данных экомониторинга
 
-URI: /api/v1/data-service/station/eco-data?station={`string`}&timestamp_from={`int64`}&timestamp_till={`int64`}
+URI: /api/v1/data-service/station/eco-data?station={`string`}&timestamp_from={`int64`}&timestamp_till={`int64`}&measurement={measurement_1}&measurement={measurement_2}
 Method: GET
 
 Параметры запроса:
@@ -170,6 +170,8 @@ Method: GET
 >timestamp_from - начало интервала, за который нужно получить данные экомониторинга
 >
 >timestamp_till - конец интервала, за который нужно получить данные экомониторинга
+>
+>measurement -  список измерений, которые должны присутствовать в выборке
 
 payload:
 ```json

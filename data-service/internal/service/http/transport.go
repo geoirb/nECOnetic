@@ -177,3 +177,55 @@ func (t *getEcoDataListTransport) EncodeResponse(w http.ResponseWriter, data []s
 	body, _ := t.buildResponse(res, err)
 	w.Write(body)
 }
+
+type getProfilerDataListTransport struct {
+	buildResponse buildResponseFunc
+}
+
+func newGetProfilerDataListTransport(
+	build buildResponseFunc,
+) *getProfilerDataListTransport {
+	return &getProfilerDataListTransport{
+		buildResponse: build,
+	}
+}
+
+func (*getProfilerDataListTransport) DecodeRequest(r *http.Request) (f service.GetProfilerData, err error) {
+	query := r.URL.Query()
+
+	if stationName, isExist := query["station"]; isExist {
+		f.StationName = &stationName[0]
+	}
+
+	if timestampFrom, isExist := query["timestamp_from"]; isExist {
+		var tsFrom int64
+		if tsFrom, err = strconv.ParseInt(timestampFrom[0], 10, 64); err != nil {
+			err = fmt.Errorf("parse timestamp_from: %s", err)
+			return
+		}
+		f.TimestampFrom = &tsFrom
+	}
+
+	if timestampTill, isExist := query["timestamp_till"]; isExist {
+		var tsTil int64
+		if tsTil, err = strconv.ParseInt(timestampTill[0], 10, 64); err != nil {
+			err = fmt.Errorf("parse timestamp_till: %s", err)
+			return
+		}
+		f.TimestampTill = &tsTil
+	}
+	return
+}
+
+func (t *getProfilerDataListTransport) EncodeResponse(w http.ResponseWriter, data []service.ProfilerData, err error) {
+	res := profilerDataListResponse{
+		Data: make([]profilerDataResponse, 0, len(data)),
+	}
+
+	for _, d := range data {
+		res.Data = append(res.Data, profilerDataResponse(d))
+	}
+
+	body, _ := t.buildResponse(res, err)
+	w.Write(body)
+}

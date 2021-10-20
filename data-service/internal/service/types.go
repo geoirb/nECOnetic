@@ -65,7 +65,7 @@ type GetEcoData struct {
 }
 
 type GetProfilerData struct {
-	StationID     *string
+	StationName   *string
 	TimestampFrom *int64
 	TimestampTill *int64
 }

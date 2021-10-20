@@ -27,3 +27,16 @@ type ecoDataResponse struct {
 	Measurement          map[string]float64 `json:"measurement,omitempty"`
 	PredictedMeasurement map[string]float64 `json:"predicted_measurement,omitempty"`
 }
+
+type profilerDataListResponse struct {
+	Data []profilerDataResponse `json:"data"`
+}
+
+type profilerDataResponse struct {
+	StationID          string             `json:"station_id"`
+	Timestamp          int64              `json:"timestamp"`
+	Temperature        map[string]float64 `json:",inline"`
+	OutsideTemperature *float64           `json:"outside_temperature,omitempty"`
+	WindDirection      *int               `json:"wind_direction,omitempty"`
+	WindSpeed          *float64           `json:"wind_speed,omitempty"`
+}
