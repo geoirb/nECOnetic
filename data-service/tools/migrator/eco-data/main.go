@@ -22,16 +22,16 @@ var sources []struct {
 	fileName    string
 	filePath    string
 }{
-	{
-		stationName: "Академика Анохина",
-		fileName:    "Академика Анохина 2020.xlsx",
-		filePath:    "../dataset/Академика Анохина 2020.xlsx",
-	},
 	// {
-	// 	stationName: "Бутлерова",
-	// 	fileName:    "Бутлерова 2020.xlsx",
-	// 	filePath:    "../dataset/Бутлерова 2020.xlsx",
+	// 	stationName: "Академика Анохина",
+	// 	fileName:    "Академика Анохина 2020.xlsx",
+	// 	filePath:    "../dataset/Академика Анохина 2020.xlsx",
 	// },
+	{
+		stationName: "Бутлерова",
+		fileName:    "Бутлерова 2020.xlsx",
+		filePath:    "../dataset/Бутлерова 2020.xlsx",
+	},
 	// {
 	// 	stationName: "Глебовская",
 	// 	fileName:    "Глебовская 2020 год.xlsx",

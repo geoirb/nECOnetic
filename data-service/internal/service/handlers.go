@@ -24,6 +24,7 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string
 		level.Error(logger).Log("msg", "open", "err", err)
 		return err
 	}
+	
 
 	// TODO: for quick name of first sheet must be const
 	name := in.GetSheetName(0)

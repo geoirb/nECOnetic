@@ -53,7 +53,7 @@ type ProfilerDataFilter struct {
 type StationData struct {
 	StationName string
 	FileName    string
-	File        io.Reader
+	File        io.ReadCloser
 	Type        string
 }
 

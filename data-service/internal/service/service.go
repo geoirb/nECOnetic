@@ -74,6 +74,7 @@ func (s *service) AddDataFromStation(ctx context.Context, in StationData) error 
 	if !isExist {
 		return errUnknownType
 	}
+	defer in.File.Close()
 
 	return h(ctx, stations[0].ID, in.FileName, in.File)
 }
