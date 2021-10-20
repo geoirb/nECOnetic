@@ -24,5 +24,5 @@ type profilerData struct {
 	Temperature        map[string]float64 `bson:"temperature"`
 	OutsideTemperature *float64           `bson:"outside_temperature,omitempty"`
 	WindDirection      *int               `bson:"wind_direction,omitempty"`
-	WindSpeed          *int               `bson:"wind_speed"`
+	WindSpeed          *float64           `bson:"wind_speed"`
 }

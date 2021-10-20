@@ -40,7 +40,7 @@ type ProfilerData struct {
 	Temperature        map[string]float64
 	OutsideTemperature *float64
 	WindDirection      *int
-	WindSpeed          *int
+	WindSpeed          *float64
 }
 
 // ProfilerDataFilter ...

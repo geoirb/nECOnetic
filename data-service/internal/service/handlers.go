@@ -24,7 +24,6 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string
 		level.Error(logger).Log("msg", "open", "err", err)
 		return err
 	}
-	
 
 	// TODO: for quick name of first sheet must be const
 	name := in.GetSheetName(0)
@@ -103,6 +102,11 @@ func (s *service) windHandler(ctx context.Context, stationID, fileName string, r
 			return err
 		}
 
+		if len(d) != 3 {
+			level.Warn(logger).Log("msg", "measurements not found")
+			continue
+		}
+
 		var windDirection int
 		windDirection, err = strconv.Atoi(d[1])
 		if err != nil {
@@ -116,8 +120,8 @@ func (s *service) windHandler(ctx context.Context, stationID, fileName string, r
 		}
 		el.WindDirection = &windDirection
 
-		var windSpeed int
-		windSpeed, err = strconv.Atoi(d[2])
+		var windSpeed float64
+		windSpeed, err = strconv.ParseFloat(d[2], 64)
 		if err != nil {
 			level.Error(logger).Log("msg", "parse data: windSpeed from file", "err", err)
 			return err
