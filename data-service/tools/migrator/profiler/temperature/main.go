@@ -68,6 +68,7 @@ func main() {
 			fmt.Println(svc.AddDataFromStation(context.Background(), data))
 			fmt.Println(time.Since(start).Minutes())
 		}
-
 	}
+	var a int
+	fmt.Scan(&a)
 }
