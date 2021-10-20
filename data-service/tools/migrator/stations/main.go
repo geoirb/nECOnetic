@@ -64,7 +64,9 @@ var stations []service.Station = []service.Station{
 
 func main() {
 	f := mongo.StorageFabric{
-		StationCollectionName: "station",
+		StationCollectionName:      "station",
+		EcoDataCollectionName:      "eco-data",
+		ProfilerDataCollectionName: "profiler-data",
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

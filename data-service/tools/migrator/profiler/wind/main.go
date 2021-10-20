@@ -8,6 +8,7 @@ import (
 	"time"
 
 	l "github.com/go-kit/log"
+	"github.com/tealeg/xlsx"
 
 	"github.com/nECOnetic/data-service/internal/mongo"
 	"github.com/nECOnetic/data-service/internal/service"
@@ -25,7 +26,7 @@ var sources []struct {
 	{
 		stationName: "Останкино",
 		fileName:    "03_метео_Останкино.xls",
-		filePath:    "../dataset/profiler/wind/03_метео_Останкино.xls",
+		filePath:    "../dataset/profiler/wind/03_Останкино.xlsx",
 	},
 }
 
@@ -57,7 +58,7 @@ func main() {
 
 	for _, src := range sources {
 		start := time.Now()
-		fmt.Println(src, start)
+		fmt.Println(xlsx.OpenFile(src.filePath))
 		file, err := os.Open(src.filePath)
 		if err != nil {
 			log.Fatal(err)
