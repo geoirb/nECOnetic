@@ -2,10 +2,16 @@ package service
 
 import (
 	"context"
-	"io"
+	"time"
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
+)
+
+var (
+	ecoType         = "eco"
+	temperatureType = "temperature"
+	windType        = "wind"
 )
 
 type storage interface {
@@ -18,10 +24,8 @@ type storage interface {
 	LoadProfilerDataList(ctx context.Context, filter ProfilerDataFilter) ([]ProfilerData, error)
 }
 
-
 type service struct {
-	ctx         context.Context
-	dataHandler map[string]func(context.Context, string, string, io.Reader) (err error)
+	ctx context.Context
 
 	storage storage
 
@@ -39,13 +43,6 @@ func New(
 		storage: storage,
 		logger:  logger,
 	}
-
-	s.dataHandler = map[string]func(context.Context, string, string, io.Reader) (err error){
-		"eco":         s.ecoDataHandler,
-		"wind":        s.windHandler,
-		"temperature": s.temperatureHandler,
-	}
-
 	return s
 }
 
@@ -56,6 +53,8 @@ func (s *service) AddStation(ctx context.Context, in Station) (Station, error) {
 
 // AddDataFromStation parse data from station and put to storage.
 func (s *service) AddDataFromStation(ctx context.Context, in StationData) error {
+	defer in.File.Close()
+
 	logger := log.WithPrefix(s.logger, "method", "AddDataFromStation")
 
 	stationFilter := StationFilter{
@@ -68,13 +67,48 @@ func (s *service) AddDataFromStation(ctx context.Context, in StationData) error 
 		return err
 	}
 
-	h, isExist := s.dataHandler[in.Type]
-	if !isExist {
+	var store func() error
+
+	switch in.Type {
+	case ecoType:
+		dataList, err := s.ecoDataHandler(ctx, stations[0].ID, in.FileName, in.File)
+		if err != nil {
+			return err
+		}
+		store = func() error {
+			return s.storage.StoreEcoData(s.ctx, dataList)
+		}
+	case windType:
+		dataList, err := s.windHandler(ctx, stations[0].ID, in.FileName, in.File)
+		if err != nil {
+			return err
+		}
+		store = func() error {
+			return s.storage.StoreProfilerData(s.ctx, dataList)
+		}
+	case temperatureType:
+		dataList, err := s.temperatureHandler(ctx, stations[0].ID, in.FileName, in.File)
+		if err != nil {
+			return err
+		}
+		store = func() error {
+			return s.storage.StoreProfilerData(s.ctx, dataList)
+		}
+	default:
 		return errUnknownType
 	}
-	defer in.File.Close()
 
-	return h(ctx, stations[0].ID, in.FileName, in.File)
+	go func() {
+		start := time.Now()
+		level.Debug(logger).Log("msg", "start store", "type", in.Type)
+		if err = store(); err != nil {
+			level.Error(logger).Log("msg", "store", "type", in.Type, "err", err)
+			return
+		}
+		level.Debug(logger).Log("msg", "finish store", "type", in.Type, time.Since(start).Seconds())
+	}()
+
+	return nil
 }
 
 // AddPredictedData ...
@@ -134,3 +168,4 @@ func (s *service) GetProfilerDataList(ctx context.Context, in GetProfilerData) (
 	}
 	return s.storage.LoadProfilerDataList(ctx, f)
 }
+
