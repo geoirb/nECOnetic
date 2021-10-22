@@ -8,8 +8,10 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/go-kit/log"
+	"github.com/go-kit/log/level"
 
 	"github.com/nECOnetic/data-service/internal/service"
 	"golang.org/x/net/http2"
@@ -40,13 +42,11 @@ func NewClient(
 	storage storage,
 	decoode bodyDecodeFunc,
 	predictClientURL string,
+	logger log.Logger,
 ) *Client {
 	client := &http.Client{
 		Transport: &http2.Transport{
-			// So http2.Transport doesn't complain the URL scheme isn't 'https'
 			AllowHTTP: true,
-			// Pretend we are dialing a TLS endpoint.
-			// Note, we ignore the passed tls.Config
 			DialTLS: func(network, addr string, cfg *tls.Config) (net.Conn, error) {
 				return net.Dial(network, addr)
 			},
@@ -58,6 +58,7 @@ func NewClient(
 		storage:          storage,
 		decode:           decoode,
 		predictClientURL: predictClientURL,
+		logger:           logger,
 	}
 }
 
@@ -73,6 +74,7 @@ func (c *Client) Predict(ctx context.Context, ecoData []service.EcoData, profile
 	}
 
 	go func() {
+		logger := log.With(c.logger, "method", "Predict", "station", ecoData[0].StationID)
 		req := request{
 			Data: make([]measurement, 0, len(ecoData)),
 		}
@@ -90,11 +92,16 @@ func (c *Client) Predict(ctx context.Context, ecoData []service.EcoData, profile
 				}
 			}
 		}
+
+		start := time.Now()
+		level.Error(logger).Log("msg", "send request to predict service", "data length", len(req.Data))
 		res, err := c.sendRequest(c.ctx, req)
 		if err != nil {
-			// log
+			level.Error(logger).Log("msg", "send request to predict service", "err", err)
 			return
 		}
+		level.Error(logger).Log("msg", "send request to predict service", "time", time.Since(start).Seconds())
+
 		predictedData := make([]service.EcoData, 0, len(res.Data))
 		for _, d := range res.Data {
 			predictedData = append(
@@ -108,7 +115,7 @@ func (c *Client) Predict(ctx context.Context, ecoData []service.EcoData, profile
 			)
 		}
 		if err = c.storage.StoreEcoData(c.ctx, predictedData); err != nil {
-			// log
+			level.Error(logger).Log("msg", "store predict data", "err", err)
 			return
 		}
 	}()

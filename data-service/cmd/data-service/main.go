@@ -83,6 +83,7 @@ func main() {
 		storage,
 		body.Decode,
 		"TODO:",
+		log.With(logger, "service", "predict-client"),
 	)
 
 	svc := service.New(
