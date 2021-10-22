@@ -1,4 +1,4 @@
-package predicted
+package predict
 
 type request struct {
 	Data []measurement `json:"data"`
@@ -6,7 +6,7 @@ type request struct {
 
 type measurement struct {
 	Timestamp          int64              `json:"timestamp"`
-	Measurements       map[string]string  `json:"measurement"`
+	Measurement        map[string]float64 `json:"measurement"`
 	Temperature        map[string]float64 `json:"temperature"`
 	OutsideTemperature *float64           `json:"outside_temperature"`
 	WindDirection      *int               `json:"wind_direction"`
@@ -18,6 +18,6 @@ type response struct {
 }
 
 type predicted struct {
-	Timestamp    int64             `json:"timestamp"`
-	Measurements map[string]string `json:"measurement"`
+	Timestamp   int64              `json:"timestamp"`
+	Measurement map[string]float64 `json:"measurement"`
 }

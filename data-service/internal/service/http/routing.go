@@ -16,16 +16,20 @@ var (
 	addStationDataURI      = prefix + "/station/data"
 	getEcoDataListURI      = prefix + "/station/eco-data"
 	getProfilerDataListURI = prefix + "/station/profiler-data"
+
+	predictURI = prefix + "/station/profiler-data"
 )
 
-type buildResponseFunc func(payload interface{}, err error) ([]byte, error)
+type bodyEncodeFunc func(payload interface{}, err error) ([]byte, error)
 
 // Routing to svc.
-func Routing(r *mux.Router, svc service.Storage, build buildResponseFunc) {
-	r.Handle(addStationURI, addStationHandler(svc, build)).Methods(http.MethodPost)
-	r.Handle(getStationListURI, getStationListHandler(svc, build)).Methods(http.MethodGet)
+func Routing(r *mux.Router, svc service.Storage, e bodyEncodeFunc) {
+	r.Handle(addStationURI, addStationHandler(svc, e)).Methods(http.MethodPost)
+	r.Handle(getStationListURI, getStationListHandler(svc, e)).Methods(http.MethodGet)
 
-	r.Handle(addStationDataURI, addStationDataHandler(svc, build)).Methods(http.MethodPost)
-	r.Handle(getEcoDataListURI, getEcoDataListHandler(svc, build)).Methods(http.MethodGet)
-	r.Handle(getProfilerDataListURI, getProfilerDataListHandler(svc, build)).Methods(http.MethodGet)
+	r.Handle(addStationDataURI, addStationDataHandler(svc, e)).Methods(http.MethodPost)
+	r.Handle(getEcoDataListURI, getEcoDataListHandler(svc, e)).Methods(http.MethodGet)
+	r.Handle(getProfilerDataListURI, getProfilerDataListHandler(svc, e)).Methods(http.MethodGet)
+
+	r.Handle(predictURI, predictHandler(svc, e)).Methods(http.MethodGet)
 }

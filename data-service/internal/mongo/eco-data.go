@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -66,7 +67,9 @@ func (s *storage) StoreEcoData(ctx context.Context, dataList []service.EcoData) 
 func (s *storage) LoadEcoDataList(ctx context.Context, filter service.EcoDataFilter) ([]service.EcoData, error) {
 	f := ecoDataFilter(filter)
 
-	cursor, err := s.ecoDataCollection.Find(ctx, f)
+	opts := options.Find().
+		SetSort(bson.M{"timestamp": -1})
+	cursor, err := s.ecoDataCollection.Find(ctx, f, opts)
 	if err != nil {
 		return nil, err
 	}

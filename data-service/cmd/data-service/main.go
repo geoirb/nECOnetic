@@ -15,8 +15,8 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"golang.org/x/net/http2"
 
+	"github.com/nECOnetic/data-service/internal/body"
 	"github.com/nECOnetic/data-service/internal/mongo"
-	"github.com/nECOnetic/data-service/internal/response"
 	"github.com/nECOnetic/data-service/internal/service"
 	transport "github.com/nECOnetic/data-service/internal/service/http"
 )
@@ -81,12 +81,14 @@ func main() {
 	svc := service.New(
 		ctxSvc,
 		storage,
+		// TODO:
+		nil,
 
 		logger,
 	)
 
 	router := mux.NewRouter()
-	transport.Routing(router, svc, response.Build)
+	transport.Routing(router, svc, body.Encode)
 
 	httpServer := http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.HttpPort),

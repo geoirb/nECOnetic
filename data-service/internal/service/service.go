@@ -24,10 +24,15 @@ type storage interface {
 	LoadProfilerDataList(ctx context.Context, filter ProfilerDataFilter) ([]ProfilerData, error)
 }
 
+type predictClient interface {
+	Predict(ctx context.Context, ecoData []EcoData, profilerData []ProfilerData) error
+}
+
 type service struct {
 	ctx context.Context
 
-	storage storage
+	storage       storage
+	predictClient predictClient
 
 	logger log.Logger
 }
@@ -36,12 +41,14 @@ type service struct {
 func New(
 	ctx context.Context,
 	storage storage,
+	predictClient predictClient,
 	logger log.Logger,
 ) Storage {
 	s := &service{
-		ctx:     ctx,
-		storage: storage,
-		logger:  logger,
+		ctx:           ctx,
+		storage:       storage,
+		predictClient: predictClient,
+		logger:        logger,
 	}
 	return s
 }
@@ -116,6 +123,49 @@ func (s *service) AddPredictedData(ctx context.Context, in []EcoData) error {
 	return s.storage.StoreEcoData(ctx, in)
 }
 
+// Predict measurements.
+func (s *service) Predict(ctx context.Context, in PredictFilter) error {
+	logger := log.WithPrefix(s.logger, "method", "Predict")
+
+	stations, err := s.storage.LoadStationList(ctx, StationFilter{
+		Name: in.StationName,
+	})
+	if err != nil {
+		level.Error(logger).Log("msg", "load station fom storage", "err", err)
+		return err
+	}
+
+	f := EcoDataFilter{
+		TimestampFrom: &in.TimestampFrom,
+		TimestampTill: &in.TimestampTill,
+	}
+
+	profilerData, err := s.storage.LoadProfilerDataList(ctx, ProfilerDataFilter{
+		TimestampFrom: &in.TimestampFrom,
+		TimestampTill: &in.TimestampTill,
+	})
+	if err != nil {
+		level.Error(logger).Log("msg", "load profiler data fom storage", "err", err)
+		return err
+	}
+
+	for _, station := range stations {
+		f.StationID = &station.ID
+
+		ecoData, err := s.storage.LoadEcoDataList(ctx, f)
+		if err != nil {
+			level.Error(logger).Log("msg", "load eco data fom storage", "err", err)
+			return err
+		}
+
+		if err = s.predictClient.Predict(ctx, ecoData, profilerData); err != nil {
+			level.Error(logger).Log("msg", "predict", "err", err)
+			return err
+		}
+	}
+	return nil
+}
+
 // GetStationList ...
 func (s *service) GetStationList(ctx context.Context) ([]Station, error) {
 	return s.storage.LoadStationList(ctx, StationFilter{})
@@ -168,4 +218,3 @@ func (s *service) GetProfilerDataList(ctx context.Context, in GetProfilerData) (
 	}
 	return s.storage.LoadProfilerDataList(ctx, f)
 }
-

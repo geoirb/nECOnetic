@@ -11,14 +11,14 @@ import (
 )
 
 type addStationTransport struct {
-	buildResponse buildResponseFunc
+	buildResponse bodyEncodeFunc
 }
 
 func newAddStationTransport(
-	build buildResponseFunc,
+	be bodyEncodeFunc,
 ) *addStationTransport {
 	return &addStationTransport{
-		buildResponse: build,
+		buildResponse: be,
 	}
 }
 
@@ -49,14 +49,14 @@ func (t *addStationTransport) EncodeResponse(w http.ResponseWriter, s service.St
 }
 
 type getStationListTransport struct {
-	buildResponse buildResponseFunc
+	buildResponse bodyEncodeFunc
 }
 
 func newGetStationListTransport(
-	build buildResponseFunc,
+	be bodyEncodeFunc,
 ) *getStationListTransport {
 	return &getStationListTransport{
-		buildResponse: build,
+		buildResponse: be,
 	}
 }
 
@@ -74,14 +74,14 @@ func (t *getStationListTransport) EncodeResponse(w http.ResponseWriter, sList []
 }
 
 type addStationDataTransport struct {
-	buildResponse buildResponseFunc
+	buildResponse bodyEncodeFunc
 }
 
 func newAddStationDataTransport(
-	build buildResponseFunc,
+	be bodyEncodeFunc,
 ) *addStationDataTransport {
 	return &addStationDataTransport{
-		buildResponse: build,
+		buildResponse: be,
 	}
 }
 
@@ -125,14 +125,14 @@ func (t *addStationDataTransport) EncodeResponse(w http.ResponseWriter, err erro
 }
 
 type getEcoDataListTransport struct {
-	buildResponse buildResponseFunc
+	buildResponse bodyEncodeFunc
 }
 
 func newGetEcoDataListTransport(
-	build buildResponseFunc,
+	be bodyEncodeFunc,
 ) *getEcoDataListTransport {
 	return &getEcoDataListTransport{
-		buildResponse: build,
+		buildResponse: be,
 	}
 }
 
@@ -179,14 +179,14 @@ func (t *getEcoDataListTransport) EncodeResponse(w http.ResponseWriter, data []s
 }
 
 type getProfilerDataListTransport struct {
-	buildResponse buildResponseFunc
+	buildResponse bodyEncodeFunc
 }
 
 func newGetProfilerDataListTransport(
-	build buildResponseFunc,
+	be bodyEncodeFunc,
 ) *getProfilerDataListTransport {
 	return &getProfilerDataListTransport{
-		buildResponse: build,
+		buildResponse: be,
 	}
 }
 
@@ -227,5 +227,45 @@ func (t *getProfilerDataListTransport) EncodeResponse(w http.ResponseWriter, dat
 	}
 
 	body, _ := t.buildResponse(res, err)
+	w.Write(body)
+}
+
+type predictTransport struct {
+	buildResponse bodyEncodeFunc
+}
+
+func newPredictTransport(
+	be bodyEncodeFunc,
+) *predictTransport {
+	return &predictTransport{
+		buildResponse: be,
+	}
+}
+
+func (*predictTransport) DecodeRequest(r *http.Request) (f service.PredictFilter, err error) {
+	query := r.URL.Query()
+
+	if stationName, isExist := query["station"]; isExist {
+		f.StationName = &stationName[0]
+	}
+
+	if timestampFrom, isExist := query["timestamp_from"]; isExist {
+		if f.TimestampFrom, err = strconv.ParseInt(timestampFrom[0], 10, 64); err != nil {
+			err = fmt.Errorf("parse timestamp_from: %s", err)
+			return
+		}
+	}
+
+	if timestampTill, isExist := query["timestamp_till"]; isExist {
+		if f.TimestampTill, err = strconv.ParseInt(timestampTill[0], 10, 64); err != nil {
+			err = fmt.Errorf("parse timestamp_till: %s", err)
+			return
+		}
+	}
+	return
+}
+
+func (t *predictTransport) EncodeResponse(w http.ResponseWriter, err error) {
+	body, _ := t.buildResponse(nil, err)
 	w.Write(body)
 }

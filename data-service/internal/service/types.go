@@ -69,3 +69,10 @@ type GetProfilerData struct {
 	TimestampFrom *int64
 	TimestampTill *int64
 }
+
+// PredictFilter ...
+type PredictFilter struct {
+	StationName   *string
+	TimestampFrom int64
+	TimestampTill int64
+}

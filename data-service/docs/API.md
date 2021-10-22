@@ -221,3 +221,17 @@ payload:
 curl --request GET \
   --url 'http://127.0.01:8000/api/v1/data-service/station/eco-data?station="Академика Анохина"&timestamp_from=1609443600&timestamp_till=1609443600'
 ```
+
+## Запустить расчет параметров
+
+## Получение списка данных экомониторинга
+
+URI: /api/v1/data-service/predict?station={`string`}&timestamp_from={`int64`}&timestamp_till={`int64`}
+Method: GET
+
+Параметры запроса:
+>station - станция, для которой необходимо произвести расчеты
+>
+>timestamp_from - начало интервала данных, по которым будет произведен расчет
+>
+>timestamp_till - конец интервала данных, по которым будет произведен расчет
