@@ -1,0 +1,124 @@
+.map{
+    box-shadow: 2px 3px 12px 1px rgba(186, 218, 212, .5);
+    background: rgba(255, 255, 255, 1);
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #E8E5E8;
+    margin-left: 40px;
+    padding-top: 10px;
+
+}
+
+.header-1{
+   background: rgba(255, 255, 255, 1);
+   padding-top: 50px;
+   padding-left: 40px;
+   height: 100px;
+   text-align: center;
+   font: 12pt sans-serif;  
+}
+
+.header-2{
+   background: linear-gradient(90deg, rgba(54,197,203,1) 0%, rgba(0,193,129,1) 21%, rgba(3,191,173,1) 59%,      rgba(2,235,208,1) 100%);
+   padding-top: 10px;
+   padding-left: 40px;
+   margin-bottom: 40px;
+   height: 40px;
+   text-align: center;
+   font: 12pt sans-serif;  
+}
+
+.Select-control {
+  background: rgba(255, 255, 255, 1) !important;
+} /* selector options*/
+
+.stations-dropdown-container .Select--multi .Select-value {
+  background: #e3a700;
+  border-color: #e3a700;
+  color: #fff;
+}
+
+
+.VirtualizedSelectFocusedOption {
+    background: rgba(200, 247, 233, 1);
+    color: black;
+}
+
+.period-radioitems{
+    color: rgba(58, 134, 93, 1);
+}
+
+.selectors{
+    padding-top: 20px;
+    padding-right: 10px;
+}
+
+.components-past-header{
+    text-align: left;
+    background: rgba(226, 246, 247, 1);
+    font-family: Avantgarde, TeX Gyre Adventor, URW Gothic L, sans-serif;
+    height: 45px;
+    padding-top: 7px;
+    padding-left: 12px;
+    color: rgba(97, 94, 97, 1);
+}
+
+.components-future-header{
+    text-align: left;
+    background: rgba(226, 246, 247, 1);
+    font-family: Avantgarde, TeX Gyre Adventor, URW Gothic L, sans-serif;
+    height: 45px;
+    padding-top: 7px;
+    padding-left: 12px;
+    color: rgba(97, 94, 97, 1);
+}
+
+.components-past-plot{
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #E8E5E8;
+    padding-top: 10px;
+    background: rgba(255, 255, 255, 1);
+}
+
+.components-future-plot{
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #E8E5E8;
+    padding-top: 10px;
+    background: rgba(255, 255, 255, 1);
+}
+
+.components-past{
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color:  rgba(242, 242, 242, 1);
+    margin-top: 1px;
+    margin-bottom: 20px;
+}
+
+.components-future{
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color:  rgba(242, 242, 242, 1);
+    margin-top: 1px;
+}
+
+.components-plots{
+    height: 770px;
+    overflow-y: scroll;
+}
+
+.right-column{
+    margin-left: 3em;
+    padding-right: 30px;
+}
+
+.wrapper{
+    background: rgba(226, 246, 247, 1);
+}
