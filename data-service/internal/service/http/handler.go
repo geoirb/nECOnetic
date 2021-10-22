@@ -23,10 +23,10 @@ func (s *addStationServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.transport.EncodeResponse(w, addedStation, err)
 }
 
-func addStationHandler(svc service.Storage, build buildResponseFunc) http.Handler {
+func addStationHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
 	return &addStationServer{
 		svc:       svc,
-		transport: newAddStationTransport(build),
+		transport: newAddStationTransport(be),
 	}
 }
 
@@ -42,10 +42,10 @@ func (s *getStationListServer) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	s.transport.EncodeResponse(w, stationList, err)
 }
 
-func getStationListHandler(svc service.Storage, build buildResponseFunc) http.Handler {
+func getStationListHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
 	return &getStationListServer{
 		svc:       svc,
-		transport: newGetStationListTransport(build),
+		transport: newGetStationListTransport(be),
 	}
 }
 
@@ -63,10 +63,10 @@ func (s *addStationDataServer) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	s.transport.EncodeResponse(w, err)
 }
 
-func addStationDataHandler(svc service.Storage, build buildResponseFunc) http.Handler {
+func addStationDataHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
 	return &addStationDataServer{
 		svc:       svc,
-		transport: newAddStationDataTransport(build),
+		transport: newAddStationDataTransport(be),
 	}
 }
 
@@ -86,10 +86,10 @@ func (s *getEcoDataListServer) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	s.transport.EncodeResponse(w, data, err)
 }
 
-func getEcoDataListHandler(svc service.Storage, build buildResponseFunc) http.Handler {
+func getEcoDataListHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
 	return &getEcoDataListServer{
 		svc:       svc,
-		transport: newGetEcoDataListTransport(build),
+		transport: newGetEcoDataListTransport(be),
 	}
 }
 
@@ -109,9 +109,31 @@ func (s *getProfilerDataListServer) ServeHTTP(w http.ResponseWriter, r *http.Req
 	s.transport.EncodeResponse(w, data, err)
 }
 
-func getProfilerDataListHandler(svc service.Storage, build buildResponseFunc) http.Handler {
+func getProfilerDataListHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
 	return &getProfilerDataListServer{
 		svc:       svc,
-		transport: newGetProfilerDataListTransport(build),
+		transport: newGetProfilerDataListTransport(be),
+	}
+}
+
+type predictServer struct {
+	svc       service.Storage
+	transport *predictTransport
+}
+
+func (s *predictServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	filter, err := s.transport.DecodeRequest(r)
+
+	if err == nil {
+		err = s.svc.Predict(r.Context(), filter)
+	}
+
+	s.transport.EncodeResponse(w, err)
+}
+
+func predictHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
+	return &predictServer{
+		svc:       svc,
+		transport: newPredictTransport(be),
 	}
 }

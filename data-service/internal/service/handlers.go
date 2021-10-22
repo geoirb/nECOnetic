@@ -16,13 +16,13 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string, r io.Reader) (err error) {
+func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string, r io.Reader) (dataList []EcoData, err error) {
 	logger := log.WithPrefix(s.logger, "method", "ecoDataHandler", "file", fileName)
 
 	in, err := excelize.OpenReader(r)
 	if err != nil {
 		level.Error(logger).Log("msg", "open", "err", err)
-		return err
+		return
 	}
 
 	// TODO: for quick name of first sheet must be const
@@ -32,7 +32,7 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string
 	hRow := rows[0]
 	dataRows := rows[1:]
 
-	dataList := make([]EcoData, 0, len(dataRows))
+	dataList = make([]EcoData, 0, len(dataRows))
 	for j, d := range dataRows {
 		lineNumb := j + 2
 		logger := log.WithPrefix(logger, "line", lineNumb)
@@ -43,7 +43,7 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string
 
 		for i := 1; i < len(hRow) && i < len(d); i++ {
 			if len(d[i]) != 0 && len(hRow[i]) != 0 {
-				if el.Measurement[hRow[i]], err = strconv.ParseFloat(d[i], 64); err != nil {
+				if el.Measurement[strings.Replace(hRow[i], ".", "", -1)], err = strconv.ParseFloat(d[i], 64); err != nil {
 					level.Error(logger).Log("msg", "parse data from file", "err", err)
 					return
 				}
@@ -57,30 +57,20 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string
 		el.Timestamp, err = parseTime(d[0])
 		if err != nil {
 			level.Error(logger).Log("msg", "parse datatime", "err", err)
-			return err
+			return
 		}
 
 		dataList = append(dataList, el)
 	}
-
-	go func() {
-		start := time.Now()
-		level.Debug(logger).Log("msg", "store eco data", "start", len(dataList))
-		if err = s.storage.StoreEcoData(s.ctx, dataList); err != nil {
-			level.Error(logger).Log("msg", "store eco data", "err", err)
-			return
-		}
-		level.Debug(logger).Log("msg", "store eco data", "sec", time.Since(start).Seconds())
-	}()
-	return nil
+	return
 }
 
-func (s *service) windHandler(ctx context.Context, stationID, fileName string, r io.Reader) (err error) {
+func (s *service) windHandler(ctx context.Context, stationID, fileName string, r io.Reader) (dataList []ProfilerData, err error) {
 	logger := log.WithPrefix(s.logger, "method", "ecoDataHandler", "file", fileName)
 	in, err := excelize.OpenReader(r)
 	if err != nil {
 		level.Error(logger).Log("msg", "open", "err", err)
-		return err
+		return
 	}
 
 	name := in.GetSheetName(0)
@@ -88,7 +78,7 @@ func (s *service) windHandler(ctx context.Context, stationID, fileName string, r
 
 	dataRows := rows[2:]
 
-	dataList := make([]ProfilerData, 0, len(dataRows))
+	dataList = make([]ProfilerData, 0, len(dataRows))
 	for j, d := range dataRows {
 		lineNumb := j + 2
 		logger := log.WithPrefix(logger, "line", lineNumb)
@@ -99,7 +89,7 @@ func (s *service) windHandler(ctx context.Context, stationID, fileName string, r
 		el.Timestamp, err = parseTime(d[0])
 		if err != nil {
 			level.Error(logger).Log("msg", "parse datatime", "err", err)
-			return err
+			return
 		}
 
 		if len(d) != 3 {
@@ -111,7 +101,7 @@ func (s *service) windHandler(ctx context.Context, stationID, fileName string, r
 		windDirection, err = strconv.Atoi(d[1])
 		if err != nil {
 			level.Error(logger).Log("msg", "parse data: windDirection from file", "err", err)
-			return err
+			return
 		}
 
 		if windDirection < 0 || windDirection > 360 {
@@ -124,22 +114,13 @@ func (s *service) windHandler(ctx context.Context, stationID, fileName string, r
 		windSpeed, err = strconv.ParseFloat(d[2], 64)
 		if err != nil {
 			level.Error(logger).Log("msg", "parse data: windSpeed from file", "err", err)
-			return err
+			return
 		}
 		el.WindSpeed = &windSpeed
 
 		dataList = append(dataList, el)
 	}
-	go func() {
-		start := time.Now()
-		level.Debug(logger).Log("msg", "store wind data", "start", len(dataList))
-		if err := s.storage.StoreProfilerData(s.ctx, dataList); err != nil {
-			level.Error(logger).Log("msg", "store wind data", "err", err)
-			return
-		}
-		level.Debug(logger).Log("msg", "store wind data", "sec", time.Since(start).Seconds())
-	}()
-	return nil
+	return
 }
 
 var (
@@ -149,7 +130,7 @@ var (
 	dateRegexp = regexp.MustCompile(`^([\d]{2}\/[\d]{2}\/[\d]{4} [012]\d:[0-5]\d)`)
 )
 
-func (s *service) temperatureHandler(ctx context.Context, stationID string, fileName string, r io.Reader) (err error) {
+func (s *service) temperatureHandler(ctx context.Context, stationID string, fileName string, r io.Reader) (dataList []ProfilerData, err error) {
 	logger := log.WithPrefix(s.logger, "method", "ecoDataHandler", "file", fileName)
 
 	var (
@@ -157,7 +138,7 @@ func (s *service) temperatureHandler(ctx context.Context, stationID string, file
 		lineNumb int
 	)
 
-	dataList := make([]ProfilerData, 0, 288)
+	dataList = make([]ProfilerData, 0, 288)
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		lineNumb++
@@ -166,21 +147,22 @@ func (s *service) temperatureHandler(ctx context.Context, stationID string, file
 			hights = parseHights(scanner.Text())
 		}
 		if dataRegexp.Match(scanner.Bytes()) {
-			timestemp, err := parseTime(string(dateRegexp.Find(scanner.Bytes())))
+			var timestamp int64
+			timestamp, err = parseTime(string(dateRegexp.Find(scanner.Bytes())))
 			if err != nil {
 				level.Error(logger).Log("msg", "parse datatime", "err", err)
-				return err
+				return
 			}
 
 			measurements := parseDigits(scanner.Text())
 			if len(measurements)-2 != len(hights) {
 				err = errFormateData
 				level.Error(logger).Log("msg", "validation data", "err", err)
-				return err
+				return
 			}
 			el := ProfilerData{
 				StationID:          stationID,
-				Timestamp:          timestemp,
+				Timestamp:          timestamp,
 				OutsideTemperature: &measurements[len(measurements)-2],
 				Temperature:        make(map[string]float64),
 			}
@@ -191,17 +173,7 @@ func (s *service) temperatureHandler(ctx context.Context, stationID string, file
 			dataList = append(dataList, el)
 		}
 	}
-
-	go func() {
-		start := time.Now()
-		level.Debug(logger).Log("msg", "store temperature data", "start", len(dataList))
-		if err := s.storage.StoreProfilerData(s.ctx, dataList); err != nil {
-			level.Error(logger).Log("msg", "store temperature data", "err", err)
-			return
-		}
-		level.Debug(logger).Log("msg", "store temperature data", "sec", time.Since(start).Seconds())
-	}()
-	return nil
+	return
 }
 
 var digitRegexp = regexp.MustCompile(`\t([-]?[0-9]+,?[0-9]*)`)

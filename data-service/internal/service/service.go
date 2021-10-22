@@ -2,10 +2,16 @@ package service
 
 import (
 	"context"
-	"io"
+	"time"
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
+)
+
+var (
+	ecoType         = "eco"
+	temperatureType = "temperature"
+	windType        = "wind"
 )
 
 type storage interface {
@@ -18,12 +24,15 @@ type storage interface {
 	LoadProfilerDataList(ctx context.Context, filter ProfilerDataFilter) ([]ProfilerData, error)
 }
 
+type predictClient interface {
+	Predict(ctx context.Context, ecoData []EcoData, profilerData []ProfilerData) error
+}
 
 type service struct {
-	ctx         context.Context
-	dataHandler map[string]func(context.Context, string, string, io.Reader) (err error)
+	ctx context.Context
 
-	storage storage
+	storage       storage
+	predictClient predictClient
 
 	logger log.Logger
 }
@@ -32,20 +41,15 @@ type service struct {
 func New(
 	ctx context.Context,
 	storage storage,
+	predictClient predictClient,
 	logger log.Logger,
 ) Storage {
 	s := &service{
-		ctx:     ctx,
-		storage: storage,
-		logger:  logger,
+		ctx:           ctx,
+		storage:       storage,
+		predictClient: predictClient,
+		logger:        logger,
 	}
-
-	s.dataHandler = map[string]func(context.Context, string, string, io.Reader) (err error){
-		"eco":         s.ecoDataHandler,
-		"wind":        s.windHandler,
-		"temperature": s.temperatureHandler,
-	}
-
 	return s
 }
 
@@ -56,6 +60,8 @@ func (s *service) AddStation(ctx context.Context, in Station) (Station, error) {
 
 // AddDataFromStation parse data from station and put to storage.
 func (s *service) AddDataFromStation(ctx context.Context, in StationData) error {
+	defer in.File.Close()
+
 	logger := log.WithPrefix(s.logger, "method", "AddDataFromStation")
 
 	stationFilter := StationFilter{
@@ -68,18 +74,96 @@ func (s *service) AddDataFromStation(ctx context.Context, in StationData) error 
 		return err
 	}
 
-	h, isExist := s.dataHandler[in.Type]
-	if !isExist {
+	var store func() error
+
+	switch in.Type {
+	case ecoType:
+		dataList, err := s.ecoDataHandler(ctx, stations[0].ID, in.FileName, in.File)
+		if err != nil {
+			return err
+		}
+		store = func() error {
+			return s.storage.StoreEcoData(s.ctx, dataList)
+		}
+	case windType:
+		dataList, err := s.windHandler(ctx, stations[0].ID, in.FileName, in.File)
+		if err != nil {
+			return err
+		}
+		store = func() error {
+			return s.storage.StoreProfilerData(s.ctx, dataList)
+		}
+	case temperatureType:
+		dataList, err := s.temperatureHandler(ctx, stations[0].ID, in.FileName, in.File)
+		if err != nil {
+			return err
+		}
+		store = func() error {
+			return s.storage.StoreProfilerData(s.ctx, dataList)
+		}
+	default:
 		return errUnknownType
 	}
-	defer in.File.Close()
 
-	return h(ctx, stations[0].ID, in.FileName, in.File)
+	go func() {
+		start := time.Now()
+		level.Debug(logger).Log("msg", "start store", "type", in.Type)
+		if err = store(); err != nil {
+			level.Error(logger).Log("msg", "store", "type", in.Type, "err", err)
+			return
+		}
+		level.Debug(logger).Log("msg", "finish store", "type", in.Type, time.Since(start).Seconds())
+	}()
+
+	return nil
 }
 
 // AddPredictedData ...
 func (s *service) AddPredictedData(ctx context.Context, in []EcoData) error {
 	return s.storage.StoreEcoData(ctx, in)
+}
+
+// Predict measurements.
+func (s *service) Predict(ctx context.Context, in PredictFilter) error {
+	logger := log.WithPrefix(s.logger, "method", "Predict")
+
+	stations, err := s.storage.LoadStationList(ctx, StationFilter{
+		Name: in.StationName,
+	})
+	if err != nil {
+		level.Error(logger).Log("msg", "load station fom storage", "err", err)
+		return err
+	}
+
+	f := EcoDataFilter{
+		TimestampFrom: &in.TimestampFrom,
+		TimestampTill: &in.TimestampTill,
+	}
+
+	profilerData, err := s.storage.LoadProfilerDataList(ctx, ProfilerDataFilter{
+		TimestampFrom: &in.TimestampFrom,
+		TimestampTill: &in.TimestampTill,
+	})
+	if err != nil {
+		level.Error(logger).Log("msg", "load profiler data fom storage", "err", err)
+		return err
+	}
+
+	for _, station := range stations {
+		f.StationID = &station.ID
+
+		ecoData, err := s.storage.LoadEcoDataList(ctx, f)
+		if err != nil {
+			level.Error(logger).Log("msg", "load eco data fom storage", "err", err)
+			return err
+		}
+
+		if err = s.predictClient.Predict(ctx, ecoData, profilerData); err != nil {
+			level.Error(logger).Log("msg", "predict", "err", err)
+			return err
+		}
+	}
+	return nil
 }
 
 // GetStationList ...

@@ -15,8 +15,9 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"golang.org/x/net/http2"
 
+	"github.com/nECOnetic/data-service/internal/body"
 	"github.com/nECOnetic/data-service/internal/mongo"
-	"github.com/nECOnetic/data-service/internal/response"
+	"github.com/nECOnetic/data-service/internal/predict"
 	"github.com/nECOnetic/data-service/internal/service"
 	transport "github.com/nECOnetic/data-service/internal/service/http"
 )
@@ -34,13 +35,11 @@ type configuration struct {
 }
 
 const (
-	prefixCfg   = ""
-	serviceName = "data-service"
+	prefixCfg = ""
 )
 
 func main() {
 	logger := log.NewJSONLogger(log.NewSyncWriter(os.Stdout))
-	logger = log.WithPrefix(logger, "service", serviceName)
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 
 	if time.Since(time.Date(2020, time.August, 15, 0, 0, 0, 0, time.Now().Location())) < 0 {
@@ -78,15 +77,25 @@ func main() {
 
 	ctxSvc, cancelSvc := context.WithCancel(context.Background())
 	defer cancelSvc()
+
+	predictCli := predict.NewClient(
+		ctxSvc,
+		storage,
+		body.Decode,
+		"TODO:",
+		log.With(logger, "service", "predict-client"),
+	)
+
 	svc := service.New(
 		ctxSvc,
 		storage,
+		predictCli,
 
-		logger,
+		log.With(logger, "service", "data-service"),
 	)
 
 	router := mux.NewRouter()
-	transport.Routing(router, svc, response.Build)
+	transport.Routing(router, svc, body.Encode)
 
 	httpServer := http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.HttpPort),

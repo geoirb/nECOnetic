@@ -1,6 +1,6 @@
-package response
+package body
 
-type response struct {
+type body struct {
 	IsOk    bool        `json:"is_ok"`
 	Payload interface{} `json:"payload,omitempty"`
 }

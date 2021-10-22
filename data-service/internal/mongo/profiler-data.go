@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -68,7 +69,9 @@ func (s *storage) StoreProfilerData(ctx context.Context, dataList []service.Prof
 func (s *storage) LoadProfilerDataList(ctx context.Context, filter service.ProfilerDataFilter) ([]service.ProfilerData, error) {
 	f := profilerDataFilter(filter)
 
-	cursor, err := s.profilerDataCollection.Find(ctx, f)
+	opts := options.Find().
+		SetSort(bson.M{"timestamp": -1})
+	cursor, err := s.profilerDataCollection.Find(ctx, f, opts)
 	// Check not found
 	if err != nil {
 		return nil, err
