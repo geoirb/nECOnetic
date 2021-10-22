@@ -9,6 +9,8 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/go-kit/log"
+
 	"github.com/nECOnetic/data-service/internal/service"
 	"golang.org/x/net/http2"
 )
@@ -27,6 +29,8 @@ type Client struct {
 	storage          storage
 	decode           bodyDecodeFunc
 	predictClientURL string
+
+	logger log.Logger
 }
 
 // NewClient ...

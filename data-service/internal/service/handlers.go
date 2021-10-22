@@ -43,7 +43,7 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string
 
 		for i := 1; i < len(hRow) && i < len(d); i++ {
 			if len(d[i]) != 0 && len(hRow[i]) != 0 {
-				if el.Measurement[hRow[i]], err = strconv.ParseFloat(d[i], 64); err != nil {
+				if el.Measurement[strings.Replace(hRow[i], ".", "", -1)], err = strconv.ParseFloat(d[i], 64); err != nil {
 					level.Error(logger).Log("msg", "parse data from file", "err", err)
 					return
 				}
