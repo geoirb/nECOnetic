@@ -17,7 +17,7 @@ var (
 	getEcoDataListURI      = prefix + "/station/eco-data"
 	getProfilerDataListURI = prefix + "/station/profiler-data"
 
-	predictURI = prefix + "/station/profiler-data"
+	// predictURI = prefix + "/station/profiler-data"
 )
 
 type bodyEncodeFunc func(payload interface{}, err error) ([]byte, error)
@@ -31,5 +31,5 @@ func Routing(r *mux.Router, svc service.Storage, e bodyEncodeFunc) {
 	r.Handle(getEcoDataListURI, getEcoDataListHandler(svc, e)).Methods(http.MethodGet)
 	r.Handle(getProfilerDataListURI, getProfilerDataListHandler(svc, e)).Methods(http.MethodGet)
 
-	r.Handle(predictURI, predictHandler(svc, e)).Methods(http.MethodGet)
+	// r.Handle(predictURI, predictHandler(svc, e)).Methods(http.MethodGet)
 }

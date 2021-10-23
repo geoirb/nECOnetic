@@ -116,24 +116,24 @@ func getProfilerDataListHandler(svc service.Storage, be bodyEncodeFunc) http.Han
 	}
 }
 
-type predictServer struct {
-	svc       service.Storage
-	transport *predictTransport
-}
+// type predictServer struct {
+// 	svc       service.Storage
+// 	transport *predictTransport
+// }
 
-func (s *predictServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	filter, err := s.transport.DecodeRequest(r)
+// func (s *predictServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// 	filter, err := s.transport.DecodeRequest(r)
 
-	if err == nil {
-		err = s.svc.Predict(r.Context(), filter)
-	}
+// 	if err == nil {
+// 		// err = s.svc.Predict(r.Context(), filter)
+// 	}
 
-	s.transport.EncodeResponse(w, err)
-}
+// 	s.transport.EncodeResponse(w, err)
+// }
 
-func predictHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
-	return &predictServer{
-		svc:       svc,
-		transport: newPredictTransport(be),
-	}
-}
+// func predictHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
+// 	return &predictServer{
+// 		svc:       svc,
+// 		transport: newPredictTransport(be),
+// 	}
+// }

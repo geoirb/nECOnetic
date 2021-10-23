@@ -41,13 +41,11 @@ type service struct {
 func New(
 	ctx context.Context,
 	storage storage,
-	predictClient predictClient,
 	logger log.Logger,
 ) Storage {
 	s := &service{
 		ctx:           ctx,
 		storage:       storage,
-		predictClient: predictClient,
 		logger:        logger,
 	}
 	return s

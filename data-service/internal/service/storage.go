@@ -9,7 +9,7 @@ type Storage interface {
 	AddDataFromStation(ctx context.Context, in StationData) error
 	AddPredictedData(ctx context.Context, in []EcoData) error
 
-	Predict(ctx context.Context, in PredictFilter) error
+	// Predict(ctx context.Context, in PredictFilter) error
 
 	GetEcoDataList(ctx context.Context, in GetEcoData) ([]EcoData, error)
 	GetProfilerDataList(ctx context.Context, in GetProfilerData) ([]ProfilerData, error)
