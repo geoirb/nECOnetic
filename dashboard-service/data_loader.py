@@ -17,7 +17,7 @@ DB_PORT = os.getenv("DB_PORT", "27017")
 
 DB_NAME = 'neconetic'
 
-client = MongoClient(f"mongodb://{DB_HOST}:{DB_PORT}/")
+client = MongoClient(f"mongodb://{DB_HOST}:{DB_PORT}/", serverSelectionTimeoutMS=30000)
 
 db = client.get_database(DB_NAME)
 
@@ -89,7 +89,11 @@ def get_measurements_data(stations=None, from_date=None, to_date=None) -> pd.Dat
     to_date = to_date or datetime.datetime.now().timestamp()
 
     stations_df = get_stations(stations)
-    stations_ids = list(stations_df['_id'].unique())
+
+    if not stations_df.empty:
+        stations_ids = list(stations_df['_id'].unique())
+    else:
+        stations_ids = []
 
     measurements = db.get_collection('eco-data')
 
