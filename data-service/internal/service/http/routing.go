@@ -14,9 +14,9 @@ var (
 	addStationURI          = prefix + "/station"
 	getStationListURI      = prefix + "/station"
 	addStationDataURI      = prefix + "/station/data"
-	getEcoDataListURI      = prefix + "/station/eco-data"
-	getProfilerDataListURI = prefix + "/station/profiler-data"
-
+	getEcoDataListURI      = prefix + "/eco"
+	getProfilerDataListURI = prefix + "/profiler"
+	addPredictDataURI      = prefix + "/predict"
 	// predictURI = prefix + "/station/profiler-data"
 )
 
@@ -30,6 +30,7 @@ func Routing(r *mux.Router, svc service.Storage, e bodyEncodeFunc) {
 	r.Handle(addStationDataURI, addStationDataHandler(svc, e)).Methods(http.MethodPost)
 	r.Handle(getEcoDataListURI, getEcoDataListHandler(svc, e)).Methods(http.MethodGet)
 	r.Handle(getProfilerDataListURI, getProfilerDataListHandler(svc, e)).Methods(http.MethodGet)
+	r.Handle(addPredictDataURI, addPredictDataHandler(svc, e)).Methods(http.MethodPost)
 
 	// r.Handle(predictURI, predictHandler(svc, e)).Methods(http.MethodGet)
 }

@@ -17,6 +17,16 @@ type stationResponse struct {
 	Lon  float64 `json:"lon"`
 }
 
+type predictDataRequest struct {
+	Data []predictData `json:"data"`
+}
+
+type predictData struct {
+	StationID   string             `json:"station_id"`
+	Timestamp   int64              `json:"timestamp"`
+	Measurement map[string]float64 `json:"measurement"`
+}
+
 type ecoDataListResponse struct {
 	Data []ecoDataResponse `json:"data"`
 }

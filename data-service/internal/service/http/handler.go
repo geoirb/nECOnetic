@@ -70,6 +70,27 @@ func addStationDataHandler(svc service.Storage, be bodyEncodeFunc) http.Handler 
 	}
 }
 
+type addPredictDataServer struct {
+	svc       service.Storage
+	transport *addPredictDataTransport
+}
+
+func (s *addPredictDataServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	predictData, err := s.transport.DecodeRequest(r)
+
+	if err == nil {
+		err = s.svc.AddPredictedData(r.Context(), predictData)
+	}
+	s.transport.EncodeResponse(w, err)
+}
+
+func addPredictDataHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
+	return &addPredictDataServer{
+		svc:       svc,
+		transport: newAddPredictDataTransport(be),
+	}
+}
+
 type getEcoDataListServer struct {
 	svc       service.Storage
 	transport *getEcoDataListTransport

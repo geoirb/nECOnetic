@@ -83,7 +83,7 @@ curl --request GET \
   --url http://127.0.0.1:8000/api/v1/data-service/station
 ```
 
-## Добавить данные в систему
+## Добавить измерения в систему
 
 URI: /api/v1/data-service/station/data
 Method: POST
@@ -121,9 +121,39 @@ curl --request POST \
   --form 'data=@/home/geoirb/project/nECOnetic/dataset/Академика Анохина 2020.xlsx'
 ```
 
+## Добавить расчеты в систему
+
+URI: /api/v1/data-service/predict
+Method: POST
+
+
+Тело запроса:
+```json
+{
+  "data": [
+    {
+      "station_id": "616feb34e3bf1d6ceefeb706",
+      "timestamp": 1609443600,
+      "measurement": {
+        "-T-": -1.1,
+        "CO": 0.4,
+        "NO": 0.001,
+        "NO2": 0.0235,
+        "PM2.5": 0.024,
+        "_V_": 228,
+        "| V |": 0.5,
+        "Влажность": 91,
+        "Давление": 746.6,
+        "Осадки": 0
+      }
+    },
+    {}
+  ]
+}
+```
+
 ## Получить список измерений
 
-## Добавление станций мониторинга в систему
 
 URI: /api/v1/data-service/station
 Method: POST
@@ -221,10 +251,9 @@ payload:
 curl --request GET \
   --url 'http://127.0.01:8000/api/v1/data-service/station/eco-data?station="Академика Анохина"&timestamp_from=1609443600&timestamp_till=1609443600'
 ```
-
+<!-- 
 ## Запустить расчет параметров
 
-## Получение списка данных экомониторинга
 
 URI: /api/v1/data-service/predict?station={`string`}&timestamp_from={`int64`}&timestamp_till={`int64`}
 Method: GET
@@ -234,4 +263,4 @@ Method: GET
 >
 >timestamp_from - начало интервала данных, по которым будет произведен расчет
 >
->timestamp_till - конец интервала данных, по которым будет произведен расчет
+>timestamp_till - конец интервала данных, по которым будет произведен расчет -->

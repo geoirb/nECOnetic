@@ -124,6 +124,46 @@ func (t *addStationDataTransport) EncodeResponse(w http.ResponseWriter, err erro
 	w.Write(body)
 }
 
+type addPredictDataTransport struct {
+	buildResponse bodyEncodeFunc
+}
+
+func newAddPredictDataTransport(
+	be bodyEncodeFunc,
+) *addPredictDataTransport {
+	return &addPredictDataTransport{
+		buildResponse: be,
+	}
+}
+
+func (*addPredictDataTransport) DecodeRequest(r *http.Request) (data []service.EcoData, err error) {
+	defer r.Body.Close()
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return
+	}
+	var req predictDataRequest
+	if err = json.Unmarshal(body, &req); err != nil {
+		return
+	}
+
+	data = make([]service.EcoData, 0, len(req.Data))
+	for _, rd := range req.Data {
+		data = append(data, service.EcoData{
+			StationID:            rd.StationID,
+			Timestamp:            rd.Timestamp,
+			PredictedMeasurement: rd.Measurement,
+		})
+	}
+	return
+}
+
+func (t *addPredictDataTransport) EncodeResponse(w http.ResponseWriter, err error) {
+	body, _ := t.buildResponse(nil, err)
+	w.Write(body)
+}
+
 type getEcoDataListTransport struct {
 	buildResponse bodyEncodeFunc
 }
