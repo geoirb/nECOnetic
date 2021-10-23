@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"time"
 
 	l "github.com/go-kit/log"
+	"github.com/go-kit/log/level"
 
 	"github.com/nECOnetic/data-service/internal/mongo"
 	"github.com/nECOnetic/data-service/internal/service"
@@ -116,18 +116,26 @@ func main() {
 			log.Fatal(err)
 		}
 
-		data := service.StationData{
-			StationName: src.stationName,
-			FileName:    src.fileName,
-			File:        file,
-			Type:        "eco",
+		stationFilter := service.StationFilter{
+			Name: &src.stationName,
 		}
 
-		if err = svc.AddDataFromStation(context.Background(), data); err != nil {
+		stations, err := st.LoadStationList(ctx, stationFilter)
+		if err != nil {
 			log.Fatal(err)
 		}
+
+		dataList, err := svc.EcoDataParser(ctx, stations[0].ID, src.fileName, file)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		start := time.Now()
+		level.Debug(logger).Log("msg", "start store", "type", "eco")
+		if err = st.StoreEcoData(context.Background(), dataList); err != nil {
+			log.Fatal(err)
+		}
+		level.Debug(logger).Log("msg", "finish store", "type", "eco", time.Since(start).Seconds())
 	}
 
-	var a int
-	fmt.Scan(&a)
 }

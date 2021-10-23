@@ -42,11 +42,11 @@ func New(
 	ctx context.Context,
 	storage storage,
 	logger log.Logger,
-) Storage {
+) *service {
 	s := &service{
-		ctx:           ctx,
-		storage:       storage,
-		logger:        logger,
+		ctx:     ctx,
+		storage: storage,
+		logger:  logger,
 	}
 	return s
 }
@@ -76,7 +76,7 @@ func (s *service) AddDataFromStation(ctx context.Context, in StationData) error 
 
 	switch in.Type {
 	case ecoType:
-		dataList, err := s.ecoDataHandler(ctx, stations[0].ID, in.FileName, in.File)
+		dataList, err := s.EcoDataParser(ctx, stations[0].ID, in.FileName, in.File)
 		if err != nil {
 			return err
 		}
@@ -84,7 +84,7 @@ func (s *service) AddDataFromStation(ctx context.Context, in StationData) error 
 			return s.storage.StoreEcoData(s.ctx, dataList)
 		}
 	case windType:
-		dataList, err := s.windHandler(ctx, stations[0].ID, in.FileName, in.File)
+		dataList, err := s.WindParser(ctx, stations[0].ID, in.FileName, in.File)
 		if err != nil {
 			return err
 		}
@@ -92,7 +92,7 @@ func (s *service) AddDataFromStation(ctx context.Context, in StationData) error 
 			return s.storage.StoreProfilerData(s.ctx, dataList)
 		}
 	case temperatureType:
-		dataList, err := s.temperatureHandler(ctx, stations[0].ID, in.FileName, in.File)
+		dataList, err := s.TemperatureParser(ctx, stations[0].ID, in.FileName, in.File)
 		if err != nil {
 			return err
 		}

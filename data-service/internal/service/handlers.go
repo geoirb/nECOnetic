@@ -16,7 +16,8 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string, r io.Reader) (dataList []EcoData, err error) {
+// EcoDataParser parses file from station with ecodata.
+func (s *service) EcoDataParser(ctx context.Context, stationID, fileName string, r io.Reader) (dataList []EcoData, err error) {
 	logger := log.WithPrefix(s.logger, "method", "ecoDataHandler", "file", fileName)
 
 	in, err := excelize.OpenReader(r)
@@ -65,7 +66,8 @@ func (s *service) ecoDataHandler(ctx context.Context, stationID, fileName string
 	return
 }
 
-func (s *service) windHandler(ctx context.Context, stationID, fileName string, r io.Reader) (dataList []ProfilerData, err error) {
+// WindParser parses file from profiler with wind's data.
+func (s *service) WindParser(ctx context.Context, stationID, fileName string, r io.Reader) (dataList []ProfilerData, err error) {
 	logger := log.WithPrefix(s.logger, "method", "ecoDataHandler", "file", fileName)
 	in, err := excelize.OpenReader(r)
 	if err != nil {
@@ -130,7 +132,8 @@ var (
 	dateRegexp = regexp.MustCompile(`^([\d]{2}\/[\d]{2}\/[\d]{4} [012]\d:[0-5]\d)`)
 )
 
-func (s *service) temperatureHandler(ctx context.Context, stationID string, fileName string, r io.Reader) (dataList []ProfilerData, err error) {
+// TemperatureParser parses file from profiler with temperature's data.
+func (s *service) TemperatureParser(ctx context.Context, stationID string, fileName string, r io.Reader) (dataList []ProfilerData, err error) {
 	logger := log.WithPrefix(s.logger, "method", "ecoDataHandler", "file", fileName)
 
 	var (

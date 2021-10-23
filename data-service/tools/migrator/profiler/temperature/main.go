@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -10,6 +9,7 @@ import (
 	"time"
 
 	l "github.com/go-kit/log"
+	"github.com/go-kit/log/level"
 
 	"github.com/nECOnetic/data-service/internal/mongo"
 	"github.com/nECOnetic/data-service/internal/service"
@@ -52,24 +52,31 @@ func main() {
 
 	for _, f := range files {
 		if strings.HasSuffix(f.Name(), ".txt") {
-			start := time.Now()
-			fmt.Println(f, start)
 			file, err := os.Open(srcDir + "/" + f.Name())
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			data := service.StationData{
-				StationName: stationName,
-				FileName:    f.Name(),
-				File:        file,
-				Type:        "temperature",
+			stationFilter := service.StationFilter{
+				Name: &stationName,
 			}
 
-			fmt.Println(svc.AddDataFromStation(context.Background(), data))
-			fmt.Println(time.Since(start).Minutes())
+			stations, err := st.LoadStationList(ctx, stationFilter)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			dataList, err := svc.TemperatureParser(ctx, stations[0].ID, f.Name(), file)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			start := time.Now()
+			level.Debug(logger).Log("msg", "start store", "type", "eco")
+			if err = st.StoreProfilerData(context.Background(), dataList); err != nil {
+				log.Fatal(err)
+			}
+			level.Debug(logger).Log("msg", "finish store", "type", "eco", time.Since(start).Seconds())
 		}
 	}
-	var a int
-	fmt.Scan(&a)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type addStationServer struct {
-	svc       service.Storage
+	svc       svc
 	transport *addStationTransport
 }
 
@@ -23,7 +23,7 @@ func (s *addStationServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.transport.EncodeResponse(w, addedStation, err)
 }
 
-func addStationHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
+func addStationHandler(svc svc, be bodyEncodeFunc) http.Handler {
 	return &addStationServer{
 		svc:       svc,
 		transport: newAddStationTransport(be),
@@ -31,7 +31,7 @@ func addStationHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
 }
 
 type getStationListServer struct {
-	svc       service.Storage
+	svc       svc
 	transport *getStationListTransport
 }
 
@@ -42,7 +42,7 @@ func (s *getStationListServer) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	s.transport.EncodeResponse(w, stationList, err)
 }
 
-func getStationListHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
+func getStationListHandler(svc svc, be bodyEncodeFunc) http.Handler {
 	return &getStationListServer{
 		svc:       svc,
 		transport: newGetStationListTransport(be),
@@ -50,7 +50,7 @@ func getStationListHandler(svc service.Storage, be bodyEncodeFunc) http.Handler 
 }
 
 type addStationDataServer struct {
-	svc       service.Storage
+	svc       svc
 	transport *addStationDataTransport
 }
 
@@ -63,7 +63,7 @@ func (s *addStationDataServer) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	s.transport.EncodeResponse(w, err)
 }
 
-func addStationDataHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
+func addStationDataHandler(svc svc, be bodyEncodeFunc) http.Handler {
 	return &addStationDataServer{
 		svc:       svc,
 		transport: newAddStationDataTransport(be),
@@ -71,7 +71,7 @@ func addStationDataHandler(svc service.Storage, be bodyEncodeFunc) http.Handler 
 }
 
 type addPredictDataServer struct {
-	svc       service.Storage
+	svc       svc
 	transport *addPredictDataTransport
 }
 
@@ -84,7 +84,7 @@ func (s *addPredictDataServer) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	s.transport.EncodeResponse(w, err)
 }
 
-func addPredictDataHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
+func addPredictDataHandler(svc svc, be bodyEncodeFunc) http.Handler {
 	return &addPredictDataServer{
 		svc:       svc,
 		transport: newAddPredictDataTransport(be),
@@ -92,7 +92,7 @@ func addPredictDataHandler(svc service.Storage, be bodyEncodeFunc) http.Handler 
 }
 
 type getEcoDataListServer struct {
-	svc       service.Storage
+	svc       svc
 	transport *getEcoDataListTransport
 }
 
@@ -107,7 +107,7 @@ func (s *getEcoDataListServer) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	s.transport.EncodeResponse(w, data, err)
 }
 
-func getEcoDataListHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
+func getEcoDataListHandler(svc svc, be bodyEncodeFunc) http.Handler {
 	return &getEcoDataListServer{
 		svc:       svc,
 		transport: newGetEcoDataListTransport(be),
@@ -115,7 +115,7 @@ func getEcoDataListHandler(svc service.Storage, be bodyEncodeFunc) http.Handler 
 }
 
 type getProfilerDataListServer struct {
-	svc       service.Storage
+	svc       svc
 	transport *getProfilerDataListTransport
 }
 
@@ -130,7 +130,7 @@ func (s *getProfilerDataListServer) ServeHTTP(w http.ResponseWriter, r *http.Req
 	s.transport.EncodeResponse(w, data, err)
 }
 
-func getProfilerDataListHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
+func getProfilerDataListHandler(svc svc, be bodyEncodeFunc) http.Handler {
 	return &getProfilerDataListServer{
 		svc:       svc,
 		transport: newGetProfilerDataListTransport(be),
@@ -138,7 +138,7 @@ func getProfilerDataListHandler(svc service.Storage, be bodyEncodeFunc) http.Han
 }
 
 // type predictServer struct {
-// 	svc       service.Storage
+// 	svc       svc
 // 	transport *predictTransport
 // }
 
@@ -152,7 +152,7 @@ func getProfilerDataListHandler(svc service.Storage, be bodyEncodeFunc) http.Han
 // 	s.transport.EncodeResponse(w, err)
 // }
 
-// func predictHandler(svc service.Storage, be bodyEncodeFunc) http.Handler {
+// func predictHandler(svc svc, be bodyEncodeFunc) http.Handler {
 // 	return &predictServer{
 // 		svc:       svc,
 // 		transport: newPredictTransport(be),
