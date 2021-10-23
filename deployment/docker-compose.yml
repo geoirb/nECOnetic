@@ -18,4 +18,19 @@ services:
         ports:
             - 8000:8000
         depends_on:
-            - mongo 
+            - mongo
+
+    dashboard-service:
+        build:
+            context: ..
+            dockerfile: docker/dashboard-service/Dockerfile
+        environment:
+            DASHBOARD_SERVICE_HOST: "0.0.0.0"
+            DASHBOARD_SERVICE_PORT: 8050
+            DB_HOST: mongo
+            DB_PORT: 27017
+        ports:
+            - 8050:8050
+        depends_on:
+            - mongo
+            - data-service
