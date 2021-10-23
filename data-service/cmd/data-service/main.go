@@ -17,7 +17,6 @@ import (
 
 	"github.com/nECOnetic/data-service/internal/body"
 	"github.com/nECOnetic/data-service/internal/mongo"
-	"github.com/nECOnetic/data-service/internal/predict"
 	"github.com/nECOnetic/data-service/internal/service"
 	transport "github.com/nECOnetic/data-service/internal/service/http"
 )
@@ -78,18 +77,9 @@ func main() {
 	ctxSvc, cancelSvc := context.WithCancel(context.Background())
 	defer cancelSvc()
 
-	predictCli := predict.NewClient(
-		ctxSvc,
-		storage,
-		body.Decode,
-		"TODO:",
-		log.With(logger, "service", "predict-client"),
-	)
-
 	svc := service.New(
 		ctxSvc,
 		storage,
-		predictCli,
 
 		log.With(logger, "service", "data-service"),
 	)

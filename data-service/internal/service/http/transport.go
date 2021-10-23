@@ -230,42 +230,42 @@ func (t *getProfilerDataListTransport) EncodeResponse(w http.ResponseWriter, dat
 	w.Write(body)
 }
 
-type predictTransport struct {
-	buildResponse bodyEncodeFunc
-}
+// type predictTransport struct {
+// 	buildResponse bodyEncodeFunc
+// }
 
-func newPredictTransport(
-	be bodyEncodeFunc,
-) *predictTransport {
-	return &predictTransport{
-		buildResponse: be,
-	}
-}
+// func newPredictTransport(
+// 	be bodyEncodeFunc,
+// ) *predictTransport {
+// 	return &predictTransport{
+// 		buildResponse: be,
+// 	}
+// }
 
-func (*predictTransport) DecodeRequest(r *http.Request) (f service.PredictFilter, err error) {
-	query := r.URL.Query()
+// func (*predictTransport) DecodeRequest(r *http.Request) (f service.PredictFilter, err error) {
+// 	query := r.URL.Query()
 
-	if stationName, isExist := query["station"]; isExist {
-		f.StationName = &stationName[0]
-	}
+// 	if stationName, isExist := query["station"]; isExist {
+// 		f.StationName = &stationName[0]
+// 	}
 
-	if timestampFrom, isExist := query["timestamp_from"]; isExist {
-		if f.TimestampFrom, err = strconv.ParseInt(timestampFrom[0], 10, 64); err != nil {
-			err = fmt.Errorf("parse timestamp_from: %s", err)
-			return
-		}
-	}
+// 	if timestampFrom, isExist := query["timestamp_from"]; isExist {
+// 		if f.TimestampFrom, err = strconv.ParseInt(timestampFrom[0], 10, 64); err != nil {
+// 			err = fmt.Errorf("parse timestamp_from: %s", err)
+// 			return
+// 		}
+// 	}
 
-	if timestampTill, isExist := query["timestamp_till"]; isExist {
-		if f.TimestampTill, err = strconv.ParseInt(timestampTill[0], 10, 64); err != nil {
-			err = fmt.Errorf("parse timestamp_till: %s", err)
-			return
-		}
-	}
-	return
-}
+// 	if timestampTill, isExist := query["timestamp_till"]; isExist {
+// 		if f.TimestampTill, err = strconv.ParseInt(timestampTill[0], 10, 64); err != nil {
+// 			err = fmt.Errorf("parse timestamp_till: %s", err)
+// 			return
+// 		}
+// 	}
+// 	return
+// }
 
-func (t *predictTransport) EncodeResponse(w http.ResponseWriter, err error) {
-	body, _ := t.buildResponse(nil, err)
-	w.Write(body)
-}
+// func (t *predictTransport) EncodeResponse(w http.ResponseWriter, err error) {
+// 	body, _ := t.buildResponse(nil, err)
+// 	w.Write(body)
+// }

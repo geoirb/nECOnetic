@@ -43,7 +43,6 @@ func main() {
 	svc := service.New(
 		context.Background(),
 		st,
-		nil,
 		logger,
 	)
 	files, err := ioutil.ReadDir(srcDir)

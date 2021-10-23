@@ -52,7 +52,6 @@ func main() {
 	svc := service.New(
 		context.Background(),
 		st,
-		nil,
 		logger,
 	)
 
