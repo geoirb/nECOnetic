@@ -31,12 +31,12 @@ func (s *storage) LoadStationList(ctx context.Context, filter service.StationFil
 	f := stationFilter(filter)
 
 	cursor, err := s.stationCollection.Find(ctx, f)
-	if cursor.RemainingBatchLength() == 0 {
-		return nil, errStationNotFound
-	}
 	// Check not found
 	if err != nil {
 		return nil, err
+	}
+	if cursor.RemainingBatchLength() == 0 {
+		return nil, errStationNotFound
 	}
 	defer cursor.Close(ctx)
 

@@ -23,7 +23,6 @@ func (f *StorageFabric) NewStorage(
 	ctx context.Context,
 	uri string,
 	databaseName string,
-	transactionNumb int,
 ) (*storage, error) {
 
 	opts := options.Client().ApplyURI(uri)
@@ -39,9 +38,7 @@ func (f *StorageFabric) NewStorage(
 
 	db := connect.Database(databaseName)
 
-	s := &storage{
-		transactionNumb: transactionNumb,
-	}
+	s := &storage{}
 	s.stationCollection = db.Collection(f.StationCollectionName)
 	_, err = s.stationCollection.Indexes().CreateMany(
 		ctx,

@@ -24,9 +24,8 @@ import (
 type configuration struct {
 	HttpPort string `envconfig:"HTTP_PORT" default:"8000"`
 
-	StorageURI                    string `envconfig:"STORAGE_URI" default:"mongodb://localhost:27017/?readPreference=primary&ssl=false"`
-	StorageDatabase               string `envconfig:"STORAGE_DATABASE" default:"neconetic"`
-	StorageOperationInTransaction int    `envconfig:"STORAGE_TRANSACTION" default:"4000"`
+	StorageURI      string `envconfig:"STORAGE_URI" default:"mongodb://localhost:27017/?readPreference=primary&ssl=false"`
+	StorageDatabase string `envconfig:"STORAGE_DATABASE" default:"neconetic"`
 
 	StationCollectionName      string `envconfig:"STATION_COLLECTION_NAME" default:"station"`
 	EcoDataCollectionName      string `envconfig:"ECO_DATA_COLLECTION_NAME" default:"eco-data"`
@@ -40,11 +39,6 @@ const (
 func main() {
 	logger := log.NewJSONLogger(log.NewSyncWriter(os.Stdout))
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
-
-	if time.Since(time.Date(2020, time.August, 15, 0, 0, 0, 0, time.Now().Location())) < 0 {
-		level.Error(logger).Log("msg", "trial version")
-		return
-	}
 
 	var cfg configuration
 	if err := envconfig.Process(prefixCfg, &cfg); err != nil {
@@ -67,7 +61,6 @@ func main() {
 		ctx,
 		cfg.StorageURI,
 		cfg.StorageDatabase,
-		cfg.StorageOperationInTransaction,
 	)
 	if err != nil {
 		level.Error(logger).Log("msg", "init mongo", "err", err)

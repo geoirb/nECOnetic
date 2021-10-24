@@ -5,7 +5,7 @@ services:
         environment:
             MONGO_INITDB_DATABASE: neconetic
         volumes:
-            - ./data:/data/db
+            - econetic-db:/data/db
         ports:
             - 27017:27017
 
@@ -34,3 +34,44 @@ services:
         depends_on:
             - mongo
             - data-service
+
+    migrate-station:
+        build:
+            context: ..
+            dockerfile: docker/migration/stations/Dockerfile
+        environment:
+            STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
+        depends_on:
+            - mongo           
+
+    migrate-eco-data:
+        build:
+            context: ..
+            dockerfile: docker/migration/eco-data/Dockerfile
+        environment:
+            STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
+        depends_on:
+            - mongo 
+            - migrate-station
+
+    migrate-profiler-wind:
+        build:
+            context: ..
+            dockerfile: docker/migration/profiler/wind/Dockerfile
+        environment:
+            STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
+        depends_on:
+            - mongo 
+            - migrate-station
+
+    migrate-profiler-temperature:
+        build:
+            context: ..
+            dockerfile: docker/migration/profiler/temperature/Dockerfile
+        environment:
+            STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
+        depends_on:
+            - mongo 
+            - migrate-station
+volumes:
+    econetic-db:
