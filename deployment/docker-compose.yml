@@ -13,7 +13,8 @@ services:
     data-service:
         build:
             context: ..
-            dockerfile: docker/data-service/Dockerfile
+            dockerfile: docker/data-service/
+        conteiner_name: data-service
         environment:
             STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
         ports:
@@ -25,6 +26,7 @@ services:
         build:
             context: ..
             dockerfile: docker/dashboard-service/Dockerfile
+        conteiner_name: dashboard-service
         environment:
             DASHBOARD_SERVICE_HOST: "0.0.0.0"
             DASHBOARD_SERVICE_PORT: 8050
@@ -40,6 +42,7 @@ services:
         build:
             context: ..
             dockerfile: docker/migration/stations/Dockerfile
+        conteiner_name: migrate-station
         environment:
             STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
         depends_on:
@@ -49,6 +52,7 @@ services:
         build:
             context: ..
             dockerfile: docker/migration/eco-data/Dockerfile
+        conteiner_name: migrate-eco-data
         environment:
             STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
         depends_on:
@@ -59,6 +63,7 @@ services:
         build:
             context: ..
             dockerfile: docker/migration/profiler/wind/Dockerfile
+        conteiner_name: migrate-profiler-wind
         environment:
             STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
         depends_on:
@@ -69,10 +74,12 @@ services:
         build:
             context: ..
             dockerfile: docker/migration/profiler/temperature/Dockerfile
+        conteiner_name: migrate-profiler-temperature
         environment:
             STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
         depends_on:
             - mongo 
             - migrate-station
+            
 volumes:
     econetic-db:
