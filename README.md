@@ -35,7 +35,7 @@ maintainers:
 * Запись предсказанных значений в БД
 
 Документация:
- * [REST API](model-service/docs/API_model.md)
+ * [REST API](model_service/docs/API_model.md)
 
 ## !!!WARNING!!!
 
