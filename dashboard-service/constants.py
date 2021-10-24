@@ -1,6 +1,6 @@
 import pandas as pd
 
-COMPONENTS = ['CO', 'NO', 'NO2', 'PM2.5', 'PM10']
+COMPONENTS = ['CO', 'NO', 'NO2', 'PM25', 'PM10']
 
 DATETIME_COL = 'Дата и время'
 
