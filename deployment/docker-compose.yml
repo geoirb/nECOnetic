@@ -2,6 +2,7 @@ version: "2"
 services:
     mongo:
         image: mongo
+        conteiner_name: mongo
         environment:
             MONGO_INITDB_DATABASE: neconetic
         volumes:

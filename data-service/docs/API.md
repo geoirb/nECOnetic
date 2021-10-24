@@ -191,7 +191,7 @@ curl --request POST \
 
 ## Получение списка данных экомониторинга
 
-URI: /api/v1/data-service/station/eco-data?station={`string`}&timestamp_from={`int64`}&timestamp_till={`int64`}&measurement={measurement_1}&measurement={measurement_2}
+URI: /api/v1/data-service/eco?station={`string`}&timestamp_from={`int64`}&timestamp_till={`int64`}&measurement={measurement_1}&measurement={measurement_2}
 Method: GET
 
 Параметры запроса:
