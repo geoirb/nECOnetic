@@ -10,7 +10,7 @@ COPY . .
 
 WORKDIR /app/data-service/
 
-RUN go install tools/migration/profiler/temperature/main.go
+RUN go install tools/migration/temperature/main.go
 
 FROM alpine:3.12
 

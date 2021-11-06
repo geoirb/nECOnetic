@@ -61,16 +61,16 @@ services:
             - mongo 
             - migrate-station
 
-    migrate-profiler-wind:
-        build:
-            context: ..
-            dockerfile: docker/migration/profiler/wind/Dockerfile
-        container_name: migrate-profiler-wind
-        environment:
-            STORAGE_URI: "mongodb://neconetic:neconetic_secrete@mongo:27017/?readPreference=primary&ssl=false"
-        depends_on:
-            - mongo 
-            - migrate-station
+    # migrate-profiler-wind:
+    #     build:
+    #         context: ..
+    #         dockerfile: docker/migration/profiler/wind/Dockerfile
+    #     container_name: migrate-profiler-wind
+    #     environment:
+    #         STORAGE_URI: "mongodb://neconetic:neconetic_secrete@mongo:27017/?readPreference=primary&ssl=false"
+    #     depends_on:
+    #         - mongo 
+    #         - migrate-station
 
     migrate-profiler-temperature:
         build:
