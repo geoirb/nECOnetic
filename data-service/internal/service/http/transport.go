@@ -154,7 +154,8 @@ func (*addPredictDataTransport) DecodeRequest(r *http.Request) (data []service.E
 			StationID:            rd.StationID,
 			Timestamp:            rd.Timestamp,
 			PredictedMeasurement: rd.Measurement,
-		})
+		},
+		)
 	}
 	return
 }

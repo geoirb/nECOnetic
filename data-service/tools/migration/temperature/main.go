@@ -17,7 +17,7 @@ import (
 
 var (
 	stationName = "Останкино"
-	srcDir      = "/dataset/profiler/temperature"
+	srcDir      = "/dataset/temperature"
 )
 
 type configuration struct {

@@ -249,7 +249,7 @@ payload:
 пример запроса
 ```bash
 curl --request GET \
-  --url 'http://127.0.01:8000/api/v1/data-service/station/eco-data?station="Академика Анохина"&timestamp_from=1609443600&timestamp_till=1609443600'
+  --url 'http://127.0.01:8000/api/v1/data-service/eco?station="Академика Анохина"&timestamp_from=1609443600&timestamp_till=1609443600'
 ```
 <!-- 
 ## Запустить расчет параметров
