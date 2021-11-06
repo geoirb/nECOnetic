@@ -181,11 +181,13 @@ def update_linear_future_plot(stations, component):
     :return: график с предсказанным распределением концентрации компонента
     """
     stations = stations if isinstance(stations, list) else [stations]
-    period_delta = TIMEDELTAS.get('day')
+    period_delta1 = pd.Timedelta(hours=24)
+    period_delta2 = pd.Timedelta(hours=48)
 
-    t = int((NOW - period_delta).timestamp())
+    period_delta1 = int((NOW - period_delta1).timestamp())
+    period_delta2 = int((NOW - period_delta2).timestamp())
 
-    df = data_loader.get_measurements_data(stations, t, NOW.timestamp())
+    df = data_loader.get_measurements_data(stations, period_delta2, period_delta1)
 
     if df.empty:
         return get_error_plot()
@@ -193,7 +195,9 @@ def update_linear_future_plot(stations, component):
         return get_empty_plot()
 
     df_by_stations = df[df[STATION_COL].isin(stations)]
-    df_by_stations_and_period = df_by_stations[df_by_stations[DATETIME_COL] >= NOW - period_delta]
+    df_by_stations_and_period = df_by_stations[(df_by_stations[DATETIME_COL] >= NOW - pd.Timedelta(hours=48)) &
+                                               (df_by_stations[DATETIME_COL] <= NOW - pd.Timedelta(hours=24))]
+    df_by_stations_and_period[DATETIME_COL] = df_by_stations_and_period[DATETIME_COL].apply(lambda x: x + pd.Timedelta(days=2))
 
     return create_time_series(df_by_stations_and_period, component)
 
