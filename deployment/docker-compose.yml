@@ -5,6 +5,8 @@ services:
         container_name: mongo
         environment:
             MONGO_INITDB_DATABASE: neconetic
+            MONGO_INITDB_ROOT_USERNAME: neconetic
+            MONGO_INITDB_ROOT_PASSWORD: neconetic_secrete
         volumes:
             - econetic-db:/data/db
         ports:
@@ -16,7 +18,7 @@ services:
             dockerfile: docker/data-service/Dockerfile
         container_name: data-service
         environment:
-            STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
+            STORAGE_URI: "mongodb://neconetic:neconetic_secrete@mongo:27017/?readPreference=primary&ssl=false"
         ports:
             - 8000:8000
         depends_on:
@@ -44,7 +46,7 @@ services:
             dockerfile: docker/migration/stations/Dockerfile
         container_name: migrate-station
         environment:
-            STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
+            STORAGE_URI: "mongodb://neconetic:neconetic_secrete@mongo:27017/?readPreference=primary&ssl=false"
         depends_on:
             - mongo           
 
@@ -54,7 +56,7 @@ services:
             dockerfile: docker/migration/eco-data/Dockerfile
         container_name: migrate-eco-data
         environment:
-            STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
+            STORAGE_URI: "mongodb://neconetic:neconetic_secrete@mongo:27017/?readPreference=primary&ssl=false"
         depends_on:
             - mongo 
             - migrate-station
@@ -65,7 +67,7 @@ services:
             dockerfile: docker/migration/profiler/wind/Dockerfile
         container_name: migrate-profiler-wind
         environment:
-            STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
+            STORAGE_URI: "mongodb://neconetic:neconetic_secrete@mongo:27017/?readPreference=primary&ssl=false"
         depends_on:
             - mongo 
             - migrate-station
@@ -76,7 +78,7 @@ services:
             dockerfile: docker/migration/profiler/temperature/Dockerfile
         container_name: migrate-profiler-temperature
         environment:
-            STORAGE_URI: "mongodb://mongo:27017/?readPreference=primary&ssl=false"
+            STORAGE_URI: "mongodb://neconetic:neconetic_secrete@mongo:27017/?readPreference=primary&ssl=false"
         depends_on:
             - mongo 
             - migrate-station
