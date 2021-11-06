@@ -16,8 +16,10 @@ DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "27017")
 
 DB_NAME = 'neconetic'
+DB_USER = 'neconetic'
+DB_PASSWORD = 'neconetic_secrete'
 
-client = MongoClient(f"mongodb://{DB_HOST}:{DB_PORT}/", serverSelectionTimeoutMS=30000)
+client = MongoClient(f"mongodb://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/", serverSelectionTimeoutMS=30000)
 
 db = client.get_database(DB_NAME)
 
