@@ -15,6 +15,6 @@ RUN go install tools/migration/eco-data/main.go
 FROM alpine:3.12
 
 COPY --from=builder /go/bin/main /usr/local/bin/eco-data
-COPY --from=builder /app/dataset /dataset
+COPY --from=builder /app/dataset/eco-data /dataset
 
 ENTRYPOINT ["/usr/local/bin/eco-data"]

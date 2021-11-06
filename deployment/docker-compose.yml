@@ -75,7 +75,7 @@ services:
     migrate-profiler-temperature:
         build:
             context: ..
-            dockerfile: docker/migration/profiler/temperature/Dockerfile
+            dockerfile: docker/migration/temperature/Dockerfile
         container_name: migrate-profiler-temperature
         environment:
             STORAGE_URI: "mongodb://neconetic:neconetic_secrete@mongo:27017/?readPreference=primary&ssl=false"

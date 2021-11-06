@@ -15,6 +15,6 @@ RUN go install tools/migration/temperature/main.go
 FROM alpine:3.12
 
 COPY --from=builder /go/bin/main /usr/local/bin/temperature
-COPY --from=builder /app/dataset /dataset
+COPY --from=builder /app/dataset/temperature /dataset
 
 ENTRYPOINT ["/usr/local/bin/temperature"]
