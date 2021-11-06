@@ -121,7 +121,7 @@ curl --request POST \
   --form 'data=@/home/geoirb/project/nECOnetic/dataset/Академика Анохина 2020.xlsx'
 ```
 
-## Добавить расчеты в систему
+## Добавить предсказания
 
 URI: /api/v1/data-service/predict
 Method: POST
@@ -153,7 +153,6 @@ Method: POST
 ```
 
 ## Получить список измерений
-
 
 URI: /api/v1/data-service/station
 Method: POST
@@ -251,6 +250,7 @@ payload:
 curl --request GET \
   --url 'http://127.0.01:8000/api/v1/data-service/eco?station="Академика Анохина"&timestamp_from=1609443600&timestamp_till=1609443600'
 ```
+
 <!-- 
 ## Запустить расчет параметров
 
